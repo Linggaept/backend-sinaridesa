@@ -1,35 +1,35 @@
 const express = require('express');
 const router = express.Router();
-const courseController = require('../controllers/course.controller');
+const eventController = require('../controllers/event.controller');
 const authMiddleware = require('../middlewares/auth');
-const { uploadCourseFiles } = require('../middlewares/upload');
-
-const courseUpload = uploadCourseFiles.fields([
-  { name: 'thumbnail', maxCount: 1 },
-  { name: 'coursePdf', maxCount: 1 },
-]);
+const { uploadEventFiles } = require('../middlewares/upload');
 
 /**
  * @swagger
  * tags:
- *   name: Courses
- *   description: Course management
+ *   name: Events
+ *   description: Event management
  */
+
+const eventUploads = uploadEventFiles.fields([
+  { name: 'thumbnail', maxCount: 1 },
+  { name: 'image', maxCount: 1 },
+]);
 
 /**
  * @swagger
- * /courses:
+ * /events:
  *   get:
- *     summary: Get all courses
- *     tags: [Courses]
+ *     summary: Get all events
+ *     tags: [Events]
  *     security:
  *       - ApiKeyAuth: []
  *     responses:
  *       200:
- *         description: A list of courses
+ *         description: A list of events
  *   post:
- *     summary: Create a new course
- *     tags: [Courses]
+ *     summary: Create a new event
+ *     tags: [Events]
  *     security:
  *       - ApiKeyAuth: []
  *       - BearerAuth: []
@@ -41,34 +41,42 @@ const courseUpload = uploadCourseFiles.fields([
  *             type: object
  *             required:
  *               - title
- *               - uploader
+ *               - date
+ *               - location
+ *               - participants
+ *               - thumbnail
  *             properties:
  *               title:
  *                 type: string
- *               uploader:
- *                 type: string
  *               description:
  *                 type: string
+ *               date:
+ *                 type: string
+ *                 format: date-time
+ *               location:
+ *                 type: string
+ *               participants:
+ *                 type: integer
  *               thumbnail:
  *                 type: string
  *                 format: binary
- *               coursePdf:
+ *               image:
  *                 type: string
  *                 format: binary
  *     responses:
  *       201:
- *         description: Course created successfully
+ *         description: Event created successfully
  */
 router.route('/')
-  .get(courseController.getAllCourses)
-  .post(authMiddleware, courseUpload, courseController.createCourse);
+  .get(eventController.getAllEvents)
+  .post(authMiddleware, eventUploads, eventController.createEvent);
 
 /**
  * @swagger
- * /courses/{id}:
+ * /events/{id}:
  *   get:
- *     summary: Get a course by ID
- *     tags: [Courses]
+ *     summary: Get an event by ID
+ *     tags: [Events]
  *     security:
  *       - ApiKeyAuth: []
  *     parameters:
@@ -77,15 +85,15 @@ router.route('/')
  *         schema:
  *           type: integer
  *         required: true
- *         description: The course ID
+ *         description: The event ID
  *     responses:
  *       200:
- *         description: Course data
+ *         description: Event data
  *       404:
- *         description: Course not found
+ *         description: Event not found
  *   put:
- *     summary: Update a course
- *     tags: [Courses]
+ *     summary: Update an event
+ *     tags: [Events]
  *     security:
  *       - ApiKeyAuth: []
  *       - BearerAuth: []
@@ -95,7 +103,7 @@ router.route('/')
  *         schema:
  *           type: integer
  *         required: true
- *         description: The course ID
+ *         description: The event ID
  *     requestBody:
  *       content:
  *         multipart/form-data:
@@ -104,21 +112,29 @@ router.route('/')
  *             properties:
  *               title:
  *                 type: string
- *               uploader:
- *                 type: string
  *               description:
  *                 type: string
+ *               date:
+ *                 type: string
+ *                 format: date-time
+ *               location:
+ *                 type: string
+ *               participants:
+ *                 type: integer
  *               thumbnail:
+ *                 type: string
+ *                 format: binary
+ *               image:
  *                 type: string
  *                 format: binary
  *     responses:
  *       200:
- *         description: Course updated successfully
+ *         description: Event updated successfully
  *       404:
- *         description: Course not found
+ *         description: Event not found
  *   delete:
- *     summary: Delete a course
- *     tags: [Courses]
+ *     summary: Delete an event
+ *     tags: [Events]
  *     security:
  *       - ApiKeyAuth: []
  *       - BearerAuth: []
@@ -128,16 +144,16 @@ router.route('/')
  *         schema:
  *           type: integer
  *         required: true
- *         description: The course ID
+ *         description: The event ID
  *     responses:
  *       200:
- *         description: Course deleted successfully
+ *         description: Event deleted successfully
  *       404:
- *         description: Course not found
+ *         description: Event not found
  */
 router.route('/:id')
-  .get(courseController.getCourseById)
-  .put(authMiddleware, uploadCourseFiles.single('thumbnail'), courseController.updateCourse)
-  .delete(authMiddleware, courseController.deleteCourse);
+  .get(eventController.getEventById)
+  .put(authMiddleware, eventUploads, eventController.updateEvent)
+  .delete(authMiddleware, eventController.deleteEvent);
 
 module.exports = router;

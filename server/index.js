@@ -1,6 +1,8 @@
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
+const swaggerUi = require('swagger-ui-express');
+const swaggerSpec = require('../swagger');
 const { PrismaClient } = require('../generated/prisma');
 require('dotenv').config();
 
@@ -20,13 +22,15 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(limiter);
-app.use(apiKeyMiddleware);
 
 // Serve static files
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
-// Routes
-app.use('/', routes);
+// Swagger Docs - Publicly accessible
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+
+// API Routes - Protected by API Key
+app.use('/', apiKeyMiddleware, routes);
 
 // Health check
 app.get('/health', async (req, res) => {
@@ -60,4 +64,5 @@ process.on('SIGTERM', async () => {
 app.listen(PORT, () => {
   console.log(`🚀 Server running on http://localhost:${PORT}`);
   console.log(`📊 Health check: http://localhost:${PORT}/health`);
+  console.log(`📚 API Docs: http://localhost:${PORT}/api-docs`);
 });

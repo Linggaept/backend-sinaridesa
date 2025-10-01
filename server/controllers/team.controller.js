@@ -3,12 +3,12 @@ const prisma = new PrismaClient();
 
 // Create a new team member
 const createTeamMember = async (req, res) => {
-  const { name, skill, position } = req.body;
+  let { name, skills, position } = req.body;
 
-  if (!name || !skill || !position) {
+  if (!name || !skills || !position) {
     return res.status(400).json({
       status: 'fail',
-      message: 'Name, skill, and position are required.',
+      message: 'Name, skills, and position are required.',
     });
   }
 
@@ -19,13 +19,35 @@ const createTeamMember = async (req, res) => {
     });
   }
 
+  let skillsArray = [];
+  if (typeof skills === 'string') {
+    skillsArray = skills.split(',').map(s => s.trim());
+  } else if (Array.isArray(skills)) {
+    skillsArray = skills;
+  }
+
+  if (skillsArray.length === 0) {
+    return res.status(400).json({
+      status: 'fail',
+      message: 'Skills cannot be empty.',
+    });
+  }
+
   try {
     const teamMember = await prisma.team.create({
       data: {
         name,
-        skill,
         position,
         picture: req.file ? req.file.path : null,
+        skills: {
+          connectOrCreate: skillsArray.map(skillName => ({
+            where: { name: skillName },
+            create: { name: skillName },
+          })),
+        },
+      },
+      include: {
+        skills: true, // Include skills in the response
       },
     });
     res.status(201).json({
@@ -45,7 +67,11 @@ const createTeamMember = async (req, res) => {
 // Get all team members
 const getAllTeamMembers = async (req, res) => {
   try {
-    const teamMembers = await prisma.team.findMany();
+    const teamMembers = await prisma.team.findMany({
+      include: {
+        skills: true, // Include skills in the response
+      },
+    });
     res.json({
       status: 'success',
       message: 'Team members retrieved successfully.',
@@ -66,6 +92,9 @@ const getTeamMemberById = async (req, res) => {
   try {
     const teamMember = await prisma.team.findUnique({
       where: { id: parseInt(id) },
+      include: {
+        skills: true, // Include skills in the.response
+      },
     });
 
     if (!teamMember) {
@@ -92,7 +121,7 @@ const getTeamMemberById = async (req, res) => {
 // Update a team member
 const updateTeamMember = async (req, res) => {
   const { id } = req.params;
-  const { name, skill, position } = req.body;
+  let { name, skills, position } = req.body;
 
   if (position && !['MENTOR', 'SINARIDESA_TEAM'].includes(position)) {
     return res.status(400).json({
@@ -102,14 +131,36 @@ const updateTeamMember = async (req, res) => {
   }
 
   try {
-    const dataToUpdate = { name, skill, position };
+    const dataToUpdate = { name, position };
     if (req.file) {
       dataToUpdate.picture = req.file.path;
+    }
+
+    if (skills) {
+      let skillsArray = [];
+      if (typeof skills === 'string') {
+        skillsArray = skills.split(',').map(s => s.trim());
+      } else if (Array.isArray(skills)) {
+        skillsArray = skills;
+      }
+
+      if (skillsArray.length > 0) {
+        dataToUpdate.skills = {
+          set: [], // Disconnect old skills
+          connectOrCreate: skillsArray.map(skillName => ({
+            where: { name: skillName },
+            create: { name: skillName },
+          })),
+        };
+      }
     }
 
     const updatedTeamMember = await prisma.team.update({
       where: { id: parseInt(id) },
       data: dataToUpdate,
+      include: {
+        skills: true, // Include skills in the response
+      },
     });
 
     res.json({
