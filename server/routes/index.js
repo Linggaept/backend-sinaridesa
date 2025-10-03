@@ -5,11 +5,13 @@ const userRoutes = require('./user.routes');
 const courseRoutes = require('./course.routes');
 const teamRoutes = require('./team.routes');
 const eventRoutes = require('./event.routes');
+const dashboardRoutes = require('./dashboard.routes');
 
 router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
 router.use('/courses', courseRoutes);
 router.use('/team', teamRoutes);
 router.use('/events', eventRoutes);
+router.use('/dashboard', dashboardRoutes);
 
 module.exports = router;

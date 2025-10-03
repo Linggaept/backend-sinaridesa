@@ -3,6 +3,8 @@ const router = express.Router();
 const courseController = require('../controllers/course.controller');
 const authMiddleware = require('../middlewares/auth');
 const { uploadCourseFiles } = require('../middlewares/upload');
+const compressImage = require('../middlewares/compressImage');
+const { query } = require('express-validator');
 
 const courseUpload = uploadCourseFiles.fields([
   { name: 'thumbnail', maxCount: 1 },
@@ -20,10 +22,28 @@ const courseUpload = uploadCourseFiles.fields([
  * @swagger
  * /courses:
  *   get:
- *     summary: Get all courses
+ *     summary: Get all courses with pagination and search
  *     tags: [Courses]
  *     security:
  *       - ApiKeyAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of items per page
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term for course title or description
  *     responses:
  *       200:
  *         description: A list of courses
@@ -56,12 +76,42 @@ const courseUpload = uploadCourseFiles.fields([
  *                 type: string
  *                 format: binary
  *     responses:
- *       201:
+ *       201: 
  *         description: Course created successfully
  */
 router.route('/')
-  .get(courseController.getAllCourses)
-  .post(authMiddleware, courseUpload, courseController.createCourse);
+  .get(
+    [
+      query('page').optional().isInt({ min: 1 }).toInt(),
+      query('limit').optional().isInt({ min: 1 }).toInt(),
+      query('search').optional().isString().escape(),
+    ],
+    courseController.getAllCourses
+  )
+  .post(authMiddleware, courseUpload, compressImage, courseController.createCourse);
+
+/**
+ * @swagger
+ * /courses/slug/{slug}:
+ *   get:
+ *     summary: Get a course by slug
+ *     tags: [Courses]
+ *     security:
+ *       - ApiKeyAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: slug
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The course slug
+ *     responses:
+ *       200:
+ *         description: Course data
+ *       404:
+ *         description: Course not found
+ */
+router.route('/slug/:slug').get(courseController.getCourseBySlug);
 
 /**
  * @swagger
@@ -137,7 +187,7 @@ router.route('/')
  */
 router.route('/:id')
   .get(courseController.getCourseById)
-  .put(authMiddleware, uploadCourseFiles.single('thumbnail'), courseController.updateCourse)
+  .put(authMiddleware, courseUpload, compressImage, courseController.updateCourse)
   .delete(authMiddleware, courseController.deleteCourse);
 
 module.exports = router;

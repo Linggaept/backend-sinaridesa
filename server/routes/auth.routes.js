@@ -79,4 +79,38 @@ router.post('/register', authController.register);
  */
 router.post('/login', authController.login);
 
+/**
+ * @swagger
+ * /auth/refresh:
+ *   get:
+ *     summary: Refresh the access token
+ *     tags: [Authentication]
+ *     security:
+ *       - ApiKeyAuth: []
+ *     responses:
+ *       200:
+ *         description: Token refreshed successfully
+ *       401:
+ *         description: Refresh token not found
+ *       403:
+ *         description: Invalid refresh token
+ */
+router.get('/refresh', authController.refreshToken);
+
+/**
+ * @swagger
+ * /auth/logout:
+ *   post:
+ *     summary: Log out a user
+ *     tags: [Authentication]
+ *     security:
+ *       - ApiKeyAuth: []
+ *     responses:
+ *       200:
+ *         description: Logout successful
+ *       204:
+ *         description: No content
+ */
+router.post('/logout', authController.logout);
+
 module.exports = router;

@@ -3,6 +3,8 @@ const router = express.Router();
 const eventController = require('../controllers/event.controller');
 const authMiddleware = require('../middlewares/auth');
 const { uploadEventFiles } = require('../middlewares/upload');
+const compressImage = require('../middlewares/compressImage');
+const { query } = require('express-validator');
 
 /**
  * @swagger
@@ -20,10 +22,28 @@ const eventUploads = uploadEventFiles.fields([
  * @swagger
  * /events:
  *   get:
- *     summary: Get all events
+ *     summary: Get all events with pagination and search
  *     tags: [Events]
  *     security:
  *       - ApiKeyAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of items per page
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term for event title or description
  *     responses:
  *       200:
  *         description: A list of events
@@ -68,8 +88,38 @@ const eventUploads = uploadEventFiles.fields([
  *         description: Event created successfully
  */
 router.route('/')
-  .get(eventController.getAllEvents)
-  .post(authMiddleware, eventUploads, eventController.createEvent);
+  .get(
+    [
+      query('page').optional().isInt({ min: 1 }).toInt(),
+      query('limit').optional().isInt({ min: 1 }).toInt(),
+      query('search').optional().isString().escape(),
+    ],
+    eventController.getAllEvents
+  )
+  .post(authMiddleware, eventUploads, compressImage, eventController.createEvent);
+
+/**
+ * @swagger
+ * /events/slug/{slug}:
+ *   get:
+ *     summary: Get an event by slug
+ *     tags: [Events]
+ *     security:
+ *       - ApiKeyAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: slug
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The event slug
+ *     responses:
+ *       200:
+ *         description: Event data
+ *       404:
+ *         description: Event not found
+ */
+router.route('/slug/:slug').get(eventController.getEventBySlug);
 
 /**
  * @swagger
@@ -153,7 +203,7 @@ router.route('/')
  */
 router.route('/:id')
   .get(eventController.getEventById)
-  .put(authMiddleware, eventUploads, eventController.updateEvent)
+  .put(authMiddleware, eventUploads, compressImage, eventController.updateEvent)
   .delete(authMiddleware, eventController.deleteEvent);
 
 module.exports = router;

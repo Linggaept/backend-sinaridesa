@@ -3,6 +3,8 @@ const router = express.Router();
 const teamController = require('../controllers/team.controller');
 const authMiddleware = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/upload');
+const compressImage = require('../middlewares/compressImage');
+const { query } = require('express-validator');
 
 /**
  * @swagger
@@ -15,10 +17,28 @@ const { uploadImage } = require('../middlewares/upload');
  * @swagger
  * /team:
  *   get:
- *     summary: Get all team members
+ *     summary: Get all team members with pagination and search
  *     tags: [Team]
  *     security:
  *       - ApiKeyAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: page
+ *         schema:
+ *           type: integer
+ *           default: 1
+ *         description: Page number for pagination
+ *       - in: query
+ *         name: limit
+ *         schema:
+ *           type: integer
+ *           default: 10
+ *         description: Number of items per page
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search term for team members
  *     responses:
  *       200:
  *         description: A list of team members
@@ -55,8 +75,15 @@ const { uploadImage } = require('../middlewares/upload');
  *         description: Team member created successfully
  */
 router.route('/')
-  .get(teamController.getAllTeamMembers)
-  .post(authMiddleware, uploadImage.single('picture'), teamController.createTeamMember);
+  .get(
+    [
+      query('page').optional().isInt({ min: 1 }).toInt(),
+      query('limit').optional().isInt({ min: 1 }).toInt(),
+      query('search').optional().isString().escape(),
+    ],
+    teamController.getAllTeamMembers
+  )
+  .post(authMiddleware, uploadImage.single('picture'), compressImage, teamController.createTeamMember);
 
 /**
  * @swagger
@@ -135,7 +162,7 @@ router.route('/')
  */
 router.route('/:id')
   .get(teamController.getTeamMemberById)
-  .put(authMiddleware, uploadImage.single('picture'), teamController.updateTeamMember)
+  .put(authMiddleware, uploadImage.single('picture'), compressImage, teamController.updateTeamMember)
   .delete(authMiddleware, teamController.deleteTeamMember);
 
 module.exports = router;

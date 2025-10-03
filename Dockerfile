@@ -11,6 +11,6 @@ RUN npm install --production && npm cache clean --force
 # Copy semua source code
 COPY . .
 
-EXPOSE 3000
+EXPOSE 5000
 
 CMD ["node", "server/index.js"]

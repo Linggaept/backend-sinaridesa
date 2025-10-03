@@ -64,18 +64,57 @@ const createTeamMember = async (req, res) => {
   }
 };
 
-// Get all team members
+// Get all team members with pagination and search
 const getAllTeamMembers = async (req, res) => {
+  const { page = 1, limit = 10, search } = req.query;
+  const skip = (page - 1) * limit;
+
   try {
+    let where = {};
+    if (search) {
+      const orConditions = [
+        { name: { contains: search, mode: 'insensitive' } },
+        {
+          skills: {
+            some: {
+              name: { contains: search, mode: 'insensitive' },
+            },
+          },
+        },
+      ];
+
+      const searchUpper = search.toUpperCase();
+      if (searchUpper === 'MENTOR' || searchUpper === 'SINARIDESA_TEAM') {
+        orConditions.push({ position: searchUpper });
+      }
+
+      if (orConditions.length > 0) {
+        where = { OR: orConditions };
+      }
+    }
+
     const teamMembers = await prisma.team.findMany({
+      where,
+      skip: parseInt(skip),
+      take: parseInt(limit),
       include: {
         skills: true, // Include skills in the response
       },
     });
+
+    const totalTeamMembers = await prisma.team.count({ where });
+    const totalPages = Math.ceil(totalTeamMembers / limit);
+
     res.json({
       status: 'success',
       message: 'Team members retrieved successfully.',
       data: teamMembers,
+      pagination: {
+        totalTeamMembers,
+        totalPages,
+        currentPage: parseInt(page),
+        limit: parseInt(limit),
+      },
     });
   } catch (error) {
     res.status(500).json({

@@ -75,8 +75,22 @@ const login = async (req, res) => {
       });
     }
 
-    const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-      expiresIn: '1h',
+    const accessToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+      expiresIn: '3h',
+    });
+
+    const refreshToken = jwt.sign({ userId: user.id }, process.env.JWT_REFRESH_SECRET, {
+      expiresIn: '7d',
+    });
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { refreshToken },
+    });
+
+    res.cookie('refreshToken', refreshToken, {
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
     const { password: _, ...userWithoutPassword } = user;
@@ -86,7 +100,7 @@ const login = async (req, res) => {
       message: 'Login successful.',
       data: {
         user: userWithoutPassword,
-        token,
+        accessToken,
       },
     });
   } catch (error) {
@@ -98,4 +112,77 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { register, login };
+const refreshToken = async (req, res) => {
+  const { refreshToken } = req.cookies;
+
+  if (!refreshToken) {
+    return res.status(401).json({ 
+      status: 'fail',
+      message: 'Refresh token not found.' 
+    });
+  }
+
+  try {
+    const user = await prisma.user.findFirst({ where: { refreshToken } });
+
+    if (!user) {
+      return res.status(403).json({ 
+        status: 'fail',
+        message: 'Invalid refresh token.' 
+      });
+    }
+
+    jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, decoded) => {
+      if (err) {
+        return res.status(403).json({ 
+          status: 'fail',
+          message: 'Invalid refresh token.' 
+        });
+      }
+
+      const accessToken = jwt.sign({ userId: decoded.userId }, process.env.JWT_SECRET, {
+        expiresIn: '15m',
+      });
+
+      res.json({
+        status: 'success',
+        message: 'Token refreshed successfully.',
+        data: {
+          accessToken,
+        },
+      });
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'An internal server error occurred.',
+      error: error.message,
+    });
+  }
+};
+
+const logout = async (req, res) => {
+  const { refreshToken } = req.cookies;
+
+  if (!refreshToken) {
+    return res.sendStatus(204); // No content
+  }
+
+  const user = await prisma.user.findFirst({ where: { refreshToken } });
+
+  if (user) {
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { refreshToken: null },
+    });
+  }
+
+  res.clearCookie('refreshToken');
+  res.json({ 
+    status: 'success',
+    message: 'Logout successful.' 
+  });
+};
+
+
+module.exports = { register, login, refreshToken, logout };

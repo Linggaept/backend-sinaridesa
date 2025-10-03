@@ -1,6 +1,29 @@
 const { PrismaClient } = require('../../generated/prisma');
 const prisma = new PrismaClient();
 
+const generateUniqueSlug = async (title) => {
+  let slug = title
+    .toString()
+    .toLowerCase()
+    .replace(/\s+/g, '-')
+    .replace(/[^\w\-]+/g, '')
+    .replace(/\-\-+/g, '-')
+    .replace(/^-+/, '')
+    .replace(/-+$/, '');
+
+  let existing = await prisma.event.findUnique({ where: { slug } });
+  let counter = 2;
+  const originalSlug = slug;
+
+  while (existing) {
+    slug = `${originalSlug}-${counter}`;
+    existing = await prisma.event.findUnique({ where: { slug } });
+    counter++;
+  }
+
+  return slug;
+};
+
 // Create a new event
 const createEvent = async (req, res) => {
   const { title, description, date, location, participants } = req.body;
@@ -13,9 +36,11 @@ const createEvent = async (req, res) => {
   }
 
   try {
+    const slug = await generateUniqueSlug(title);
     const event = await prisma.event.create({
       data: {
         title,
+        slug,
         description,
         date: new Date(date),
         location,
@@ -40,12 +65,39 @@ const createEvent = async (req, res) => {
 
 // Get all events
 const getAllEvents = async (req, res) => {
+  const { page = 1, limit = 10, search } = req.query;
+  const skip = (page - 1) * limit;
+
   try {
-    const events = await prisma.event.findMany();
+    const where = search
+      ? {
+          OR: [
+            { title: { contains: search, mode: 'insensitive' } },
+            { description: { contains: search, mode: 'insensitive' } },
+            { location: { contains: search, mode: 'insensitive' } },
+          ],
+        }
+      : {};
+
+    const events = await prisma.event.findMany({
+      where,
+      skip: parseInt(skip),
+      take: parseInt(limit),
+    });
+
+    const totalEvents = await prisma.event.count({ where });
+    const totalPages = Math.ceil(totalEvents / limit);
+
     res.json({
       status: 'success',
       message: 'Events retrieved successfully.',
       data: events,
+      pagination: {
+        totalEvents,
+        totalPages,
+        currentPage: parseInt(page),
+        limit: parseInt(limit),
+      },
     });
   } catch (error) {
     res.status(500).json({
@@ -85,6 +137,35 @@ const getEventById = async (req, res) => {
   }
 };
 
+// Get a single event by slug
+const getEventBySlug = async (req, res) => {
+  const { slug } = req.params;
+  try {
+    const event = await prisma.event.findUnique({
+      where: { slug },
+    });
+
+    if (!event) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'Event not found.',
+      });
+    }
+
+    res.json({
+      status: 'success',
+      message: 'Event retrieved successfully.',
+      data: event,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'An internal server error occurred.',
+      error: error.message,
+    });
+  }
+};
+
 // Update an event
 const updateEvent = async (req, res) => {
   const { id } = req.params;
@@ -92,13 +173,28 @@ const updateEvent = async (req, res) => {
 
   try {
     const dataToUpdate = {};
-    if (title) dataToUpdate.title = title;
+    if (title) {
+      dataToUpdate.title = title;
+      dataToUpdate.slug = await generateUniqueSlug(title);
+    }
     if (description) dataToUpdate.description = description;
     if (date) dataToUpdate.date = new Date(date);
     if (location) dataToUpdate.location = location;
     if (participants) dataToUpdate.participants = parseInt(participants);
-    if (req.files['thumbnail']) dataToUpdate.thumbnail = req.files['thumbnail'][0].path;
-    if (req.files['image']) dataToUpdate.image = req.files['image'][0].path;
+    if (req.files && req.files.thumbnail) {
+      dataToUpdate.thumbnail = req.files.thumbnail[0].path;
+    }
+    if (req.files && req.files.image) {
+      dataToUpdate.image = req.files.image[0].path;
+    }
+
+    // Check if there is anything to update
+    if (Object.keys(dataToUpdate).length === 0) {
+      return res.status(400).json({
+        status: 'fail',
+        message: 'No fields to update provided.',
+      });
+    }
 
     const updatedEvent = await prisma.event.update({
       where: { id: parseInt(id) },
@@ -157,6 +253,7 @@ module.exports = {
   createEvent,
   getAllEvents,
   getEventById,
+  getEventBySlug,
   updateEvent,
   deleteEvent,
 };

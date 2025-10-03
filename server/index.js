@@ -1,62 +1,71 @@
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const swaggerUi = require('swagger-ui-express');
-const swaggerSpec = require('../swagger');
-const { PrismaClient } = require('../generated/prisma');
-require('dotenv').config();
+const express = require("express");
+const cors = require("cors");
+const path = require("path");
+const cookieParser = require("cookie-parser");
+const swaggerUi = require("swagger-ui-express");
+const swaggerSpec = require("../swagger");
+const { PrismaClient } = require("../generated/prisma");
+require("dotenv").config();
 
-const limiter = require('./middlewares/rateLimiter');
-const apiKeyMiddleware = require('./middlewares/apiKey');
-const routes = require('./routes');
+const limiter = require("./middlewares/rateLimiter");
+const apiKeyMiddleware = require("./middlewares/apiKey");
+const routes = require("./routes");
 
 const app = express();
 const prisma = new PrismaClient();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 5001;
 
 // Middlewares
-app.use(cors({
-  origin: ['http://localhost:3000', 'http://localhost:5173'],
-  credentials: true
-}));
+app.use(
+  cors({
+    origin: [
+      "http://localhost:3000",
+      "http://localhost:5173",
+      "http://localhost:5000",
+      "https://sinaridesa.com",
+    ],
+    credentials: true,
+  })
+);
+app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(limiter);
 
 // Serve static files
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // Swagger Docs - Publicly accessible
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
+app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 // API Routes - Protected by API Key
-app.use('/', apiKeyMiddleware, routes);
+app.use("/api", apiKeyMiddleware, routes);
 
 // Health check
-app.get('/health', async (req, res) => {
+app.get("/health", async (req, res) => {
   try {
     await prisma.$queryRaw`SELECT 1`;
     res.json({
-      status: 'ok',
-      database: 'connected',
-      timestamp: new Date().toISOString()
+      status: "ok",
+      database: "connected",
+      timestamp: new Date().toISOString(),
     });
   } catch (error) {
     res.status(500).json({
-      status: 'error',
-      database: 'disconnected',
-      error: error.message
+      status: "error",
+      database: "disconnected",
+      error: error.message,
     });
   }
 });
 
 // Graceful shutdown
-process.on('SIGINT', async () => {
+process.on("SIGINT", async () => {
   await prisma.$disconnect();
   process.exit(0);
 });
 
-process.on('SIGTERM', async () => {
+process.on("SIGTERM", async () => {
   await prisma.$disconnect();
   process.exit(0);
 });
