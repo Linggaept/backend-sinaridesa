@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const courseController = require('../controllers/course.controller');
-const { authenticateToken } = require('../middlewares/auth');
+const { authenticateToken, isAdmin } = require('../middlewares/auth');
 const { uploadCourseFiles } = require('../middlewares/upload');
 const compressImage = require('../middlewares/compressImage');
 const { query } = require('express-validator');
@@ -22,10 +22,11 @@ const courseUpload = uploadCourseFiles.fields([
  * @swagger
  * /courses:
  *   get:
- *     summary: Get all courses with pagination and search
+ *     summary: Get all courses with pagination and search (Authenticated users only)
  *     tags: [Courses]
  *     security:
  *       - ApiKeyAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -47,8 +48,10 @@ const courseUpload = uploadCourseFiles.fields([
  *     responses:
  *       200:
  *         description: A list of courses
+ *       401:
+ *         description: Unauthorized
  *   post:
- *     summary: Create a new course
+ *     summary: Create a new course (Admin only)
  *     tags: [Courses]
  *     security:
  *       - ApiKeyAuth: []
@@ -78,9 +81,12 @@ const courseUpload = uploadCourseFiles.fields([
  *     responses:
  *       201: 
  *         description: Course created successfully
+ *       403:
+ *         description: Forbidden
  */
 router.route('/')
   .get(
+    authenticateToken,
     [
       query('page').optional().isInt({ min: 1 }).toInt(),
       query('limit').optional().isInt({ min: 1 }).toInt(),
@@ -88,16 +94,17 @@ router.route('/')
     ],
     courseController.getAllCourses
   )
-  .post(authenticateToken, courseUpload, compressImage, courseController.createCourse);
+  .post(authenticateToken, isAdmin, courseUpload, compressImage, courseController.createCourse);
 
 /**
  * @swagger
  * /courses/slug/{slug}:
  *   get:
- *     summary: Get a course by slug
+ *     summary: Get a course by slug (Authenticated users only)
  *     tags: [Courses]
  *     security:
  *       - ApiKeyAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: slug
@@ -110,17 +117,20 @@ router.route('/')
  *         description: Course data
  *       404:
  *         description: Course not found
+ *       401:
+ *         description: Unauthorized
  */
-router.route('/slug/:slug').get(courseController.getCourseBySlug);
+router.route('/slug/:slug').get(authenticateToken, courseController.getCourseBySlug);
 
 /**
  * @swagger
  * /courses/{id}:
  *   get:
- *     summary: Get a course by ID
+ *     summary: Get a course by ID (Authenticated users only)
  *     tags: [Courses]
  *     security:
  *       - ApiKeyAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -133,8 +143,10 @@ router.route('/slug/:slug').get(courseController.getCourseBySlug);
  *         description: Course data
  *       404:
  *         description: Course not found
+ *       401:
+ *         description: Unauthorized
  *   put:
- *     summary: Update a course
+ *     summary: Update a course (Admin only)
  *     tags: [Courses]
  *     security:
  *       - ApiKeyAuth: []
@@ -164,10 +176,12 @@ router.route('/slug/:slug').get(courseController.getCourseBySlug);
  *     responses:
  *       200:
  *         description: Course updated successfully
+ *       403:
+ *         description: Forbidden
  *       404:
  *         description: Course not found
  *   delete:
- *     summary: Delete a course
+ *     summary: Delete a course (Admin only)
  *     tags: [Courses]
  *     security:
  *       - ApiKeyAuth: []
@@ -182,12 +196,14 @@ router.route('/slug/:slug').get(courseController.getCourseBySlug);
  *     responses:
  *       200:
  *         description: Course deleted successfully
+ *       403:
+ *         description: Forbidden
  *       404:
  *         description: Course not found
  */
 router.route('/:id')
-  .get(courseController.getCourseById)
-  .put(authenticateToken, courseUpload, compressImage, courseController.updateCourse)
-  .delete(authenticateToken, courseController.deleteCourse);
+  .get(authenticateToken, courseController.getCourseById)
+  .put(authenticateToken, isAdmin, courseUpload, compressImage, courseController.updateCourse)
+  .delete(authenticateToken, isAdmin, courseController.deleteCourse);
 
 module.exports = router;

@@ -1,6 +1,8 @@
 const jwt = require('jsonwebtoken');
+const { PrismaClient } = require('../../generated/prisma');
+const prisma = new PrismaClient();
 
-const authenticateToken = (req, res, next) => {
+const authenticateToken = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (!authHeader || !authHeader.startsWith('Bearer ')) {
@@ -12,34 +14,44 @@ const authenticateToken = (req, res, next) => {
 
   const token = authHeader.split(' ')[1];
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-    if (err) {
-      return res.status(403).json({
-        status: 'fail',
-        message: 'Forbidden: Invalid or expired token.',
-      });
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await prisma.users.findUnique({ where: { id: decoded.userId } });
+
+    if (!user) {
+      return res.status(403).json({ status: 'fail', message: 'Forbidden: User not found.' });
     }
 
     req.user = user;
     next();
-  });
+  } catch (err) {
+    return res.status(403).json({ status: 'fail', message: 'Forbidden: Invalid or expired token.' });
+  }
 };
 
-const optionalAuthenticateToken = (req, res, next) => {
+const optionalAuthenticateToken = async (req, res, next) => {
   const authHeader = req.headers.authorization;
 
   if (authHeader && authHeader.startsWith('Bearer ')) {
     const token = authHeader.split(' ')[1];
-
-    jwt.verify(token, process.env.JWT_SECRET, (err, user) => {
-      if (!err) {
+    try {
+      const decoded = jwt.verify(token, process.env.JWT_SECRET);
+      const user = await prisma.users.findUnique({ where: { id: decoded.userId } });
+      if (user) {
         req.user = user;
       }
-      next();
-    });
-  } else {
-    next();
+    } catch (err) {
+      // Invalid token, proceed without authentication
+    }
   }
+  next();
 };
 
-module.exports = { authenticateToken, optionalAuthenticateToken };
+const isAdmin = (req, res, next) => {
+    if (req.user && req.user.role === 'ADMIN') {
+        return next();
+    }
+    return res.status(403).json({ status: 'fail', message: 'Forbidden: This action requires admin privileges.' });
+};
+
+module.exports = { authenticateToken, optionalAuthenticateToken, isAdmin };

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const eventController = require('../controllers/event.controller');
-const { authenticateToken } = require('../middlewares/auth');
+const { authenticateToken, isAdmin } = require('../middlewares/auth');
 const { uploadEventFiles } = require('../middlewares/upload');
 const compressImage = require('../middlewares/compressImage');
 const { query } = require('express-validator');
@@ -22,10 +22,11 @@ const eventUploads = uploadEventFiles.fields([
  * @swagger
  * /events:
  *   get:
- *     summary: Get all events with pagination and search
+ *     summary: Get all events with pagination and search (Authenticated users only)
  *     tags: [Events]
  *     security:
  *       - ApiKeyAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -47,8 +48,10 @@ const eventUploads = uploadEventFiles.fields([
  *     responses:
  *       200:
  *         description: A list of events
+ *       401:
+ *         description: Unauthorized
  *   post:
- *     summary: Create a new event
+ *     summary: Create a new event (Admin only)
  *     tags: [Events]
  *     security:
  *       - ApiKeyAuth: []
@@ -86,9 +89,12 @@ const eventUploads = uploadEventFiles.fields([
  *     responses:
  *       201:
  *         description: Event created successfully
+ *       403:
+ *         description: Forbidden
  */
 router.route('/')
   .get(
+    authenticateToken,
     [
       query('page').optional().isInt({ min: 1 }).toInt(),
       query('limit').optional().isInt({ min: 1 }).toInt(),
@@ -96,16 +102,17 @@ router.route('/')
     ],
     eventController.getAllEvents
   )
-  .post(authenticateToken, eventUploads, compressImage, eventController.createEvent);
+  .post(authenticateToken, isAdmin, eventUploads, compressImage, eventController.createEvent);
 
 /**
  * @swagger
  * /events/slug/{slug}:
  *   get:
- *     summary: Get an event by slug
+ *     summary: Get an event by slug (Authenticated users only)
  *     tags: [Events]
  *     security:
  *       - ApiKeyAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: slug
@@ -118,17 +125,20 @@ router.route('/')
  *         description: Event data
  *       404:
  *         description: Event not found
+ *       401:
+ *         description: Unauthorized
  */
-router.route('/slug/:slug').get(eventController.getEventBySlug);
+router.route('/slug/:slug').get(authenticateToken, eventController.getEventBySlug);
 
 /**
  * @swagger
  * /events/{id}:
  *   get:
- *     summary: Get an event by ID
+ *     summary: Get an event by ID (Authenticated users only)
  *     tags: [Events]
  *     security:
  *       - ApiKeyAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -141,8 +151,10 @@ router.route('/slug/:slug').get(eventController.getEventBySlug);
  *         description: Event data
  *       404:
  *         description: Event not found
+ *       401:
+ *         description: Unauthorized
  *   put:
- *     summary: Update an event
+ *     summary: Update an event (Admin only)
  *     tags: [Events]
  *     security:
  *       - ApiKeyAuth: []
@@ -180,10 +192,12 @@ router.route('/slug/:slug').get(eventController.getEventBySlug);
  *     responses:
  *       200:
  *         description: Event updated successfully
+ *       403:
+ *         description: Forbidden
  *       404:
  *         description: Event not found
  *   delete:
- *     summary: Delete an event
+ *     summary: Delete an event (Admin only)
  *     tags: [Events]
  *     security:
  *       - ApiKeyAuth: []
@@ -198,12 +212,14 @@ router.route('/slug/:slug').get(eventController.getEventBySlug);
  *     responses:
  *       200:
  *         description: Event deleted successfully
+ *       403:
+ *         description: Forbidden
  *       404:
  *         description: Event not found
  */
 router.route('/:id')
-  .get(eventController.getEventById)
-  .put(authenticateToken, eventUploads, compressImage, eventController.updateEvent)
-  .delete(authenticateToken, eventController.deleteEvent);
+  .get(authenticateToken, eventController.getEventById)
+  .put(authenticateToken, isAdmin, eventUploads, compressImage, eventController.updateEvent)
+  .delete(authenticateToken, isAdmin, eventController.deleteEvent);
 
 module.exports = router;

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const dashboardController = require('../controllers/dashboard.controller');
-const { authenticateToken } = require('../middlewares/auth');
+const { authenticateToken, isAdmin } = require('../middlewares/auth');
 
 /**
  * @swagger
@@ -14,7 +14,7 @@ const { authenticateToken } = require('../middlewares/auth');
  * @swagger
  * /dashboard/stats:
  *   get:
- *     summary: Get statistics for the dashboard
+ *     summary: Get statistics for the dashboard (Admin only)
  *     tags: [Dashboard]
  *     security:
  *       - ApiKeyAuth: []
@@ -22,7 +22,9 @@ const { authenticateToken } = require('../middlewares/auth');
  *     responses:
  *       200:
  *         description: Dashboard statistics
+ *       403:
+ *         description: Forbidden
  */
-router.get('/stats', authenticateToken, dashboardController.getDashboardStats);
+router.get('/stats', authenticateToken, isAdmin, dashboardController.getDashboardStats);
 
 module.exports = router;

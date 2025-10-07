@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const certificateController = require('../controllers/certificate.controller');
 const apiKeyMiddleware = require('../middlewares/apiKey');
-const { authenticateToken } = require('../middlewares/auth');
+const { authenticateToken, isAdmin } = require('../middlewares/auth');
 
 /**
  * @swagger
@@ -57,8 +57,10 @@ const { authenticateToken } = require('../middlewares/auth');
  * @swagger
  * /certificates/verify/{hash}:
  *   get:
- *     summary: Verify a certificate by its hash
+ *     summary: Verify a certificate by its hash (Public, requires API Key)
  *     tags: [Certificates]
+ *     security:
+ *       - ApiKeyAuth: []
  *     parameters:
  *       - in: path
  *         name: hash
@@ -80,9 +82,10 @@ router.get('/verify/:hash', apiKeyMiddleware, certificateController.verifyCertif
  * @swagger
  * /certificates:
  *   post:
- *     summary: Create a new certificate
+ *     summary: Create a new certificate (Admin only)
  *     tags: [Certificates]
  *     security:
+ *       - ApiKeyAuth: []
  *       - BearerAuth: []
  *     requestBody:
  *       required: true
@@ -103,18 +106,19 @@ router.get('/verify/:hash', apiKeyMiddleware, certificateController.verifyCertif
  *         description: The certificate was successfully created.
  *       400:
  *         description: Failed to create certificate.
- *       401:
- *         description: Unauthorized.
+ *       403:
+ *         description: Forbidden.
  */
-router.post('/', apiKeyMiddleware, authenticateToken, certificateController.createCertificate);
+router.post('/', authenticateToken, isAdmin, certificateController.createCertificate);
 
 /**
  * @swagger
  * /certificates/batch:
  *   post:
- *     summary: Create multiple new certificates at once
+ *     summary: Create multiple new certificates at once (Admin only)
  *     tags: [Certificates]
  *     security:
+ *       - ApiKeyAuth: []
  *       - BearerAuth: []
  *     requestBody:
  *       required: true
@@ -137,18 +141,19 @@ router.post('/', apiKeyMiddleware, authenticateToken, certificateController.crea
  *         description: The certificates were successfully created.
  *       400:
  *         description: Failed to create certificates.
- *       401:
- *         description: Unauthorized.
+ *       403:
+ *         description: Forbidden.
  */
-router.post('/batch', apiKeyMiddleware, authenticateToken, certificateController.createBatchCertificates);
+router.post('/batch', authenticateToken, isAdmin, certificateController.createBatchCertificates);
 
 /**
  * @swagger
  * /certificates:
  *   get:
- *     summary: Returns the list of all the certificates
+ *     summary: Returns the list of all the certificates (Authenticated users only)
  *     tags: [Certificates]
  *     security:
+ *       - ApiKeyAuth: []
  *       - BearerAuth: []
  *     responses:
  *       200:
@@ -156,15 +161,16 @@ router.post('/batch', apiKeyMiddleware, authenticateToken, certificateController
  *       401:
  *         description: Unauthorized.
  */
-router.get('/', apiKeyMiddleware, authenticateToken, certificateController.getAllCertificates);
+router.get('/', authenticateToken, certificateController.getAllCertificates);
 
 /**
  * @swagger
  * /certificates/{id}:
  *   get:
- *     summary: Get the certificate by id
+ *     summary: Get the certificate by id (Authenticated users only)
  *     tags: [Certificates]
  *     security:
+ *       - ApiKeyAuth: []
  *       - BearerAuth: []
  *     parameters:
  *       - in: path
@@ -181,15 +187,16 @@ router.get('/', apiKeyMiddleware, authenticateToken, certificateController.getAl
  *       401:
  *         description: Unauthorized.
  */
-router.get('/:id', apiKeyMiddleware, authenticateToken, certificateController.getCertificateById);
+router.get('/:id', authenticateToken, certificateController.getCertificateById);
 
 /**
  * @swagger
  * /certificates/{id}:
  *   put:
- *     summary: Update the certificate by the id
+ *     summary: Update the certificate by the id (Admin only)
  *     tags: [Certificates]
  *     security:
+ *       - ApiKeyAuth: []
  *       - BearerAuth: []
  *     parameters:
  *       - in: path
@@ -216,20 +223,21 @@ router.get('/:id', apiKeyMiddleware, authenticateToken, certificateController.ge
  *         description: The certificate was updated.
  *       400:
  *         description: Failed to update certificate.
+ *       403:
+ *         description: Forbidden.
  *       404:
  *         description: The certificate was not found.
- *       401:
- *         description: Unauthorized.
  */
-router.put('/:id', apiKeyMiddleware, authenticateToken, certificateController.updateCertificate);
+router.put('/:id', authenticateToken, isAdmin, certificateController.updateCertificate);
 
 /**
  * @swagger
  * /certificates/{id}:
  *   delete:
- *     summary: Remove the certificate by id
+ *     summary: Remove the certificate by id (Admin only)
  *     tags: [Certificates]
  *     security:
+ *       - ApiKeyAuth: []
  *       - BearerAuth: []
  *     parameters:
  *       - in: path
@@ -243,11 +251,11 @@ router.put('/:id', apiKeyMiddleware, authenticateToken, certificateController.up
  *         description: The certificate was deleted.
  *       400:
  *         description: Failed to delete certificate.
+ *       403:
+ *         description: Forbidden.
  *       404:
  *         description: The certificate was not found.
- *       401:
- *         description: Unauthorized.
  */
-router.delete('/:id', apiKeyMiddleware, authenticateToken, certificateController.deleteCertificate);
+router.delete('/:id', authenticateToken, isAdmin, certificateController.deleteCertificate);
 
 module.exports = router;

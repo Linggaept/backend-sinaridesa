@@ -27,7 +27,7 @@ const generateUniqueSlug = async (title) => {
 // Create a new course
 const createCourse = async (req, res) => {
   const { title, uploader, description } = req.body;
-  const authorId = req.user.userId;
+  const authorId = req.user.id;
 
   if (!title || !uploader) {
     return res.status(400).json({
@@ -37,15 +37,6 @@ const createCourse = async (req, res) => {
   }
 
   try {
-    // Verify the user exists before creating the course
-    const user = await prisma.users.findUnique({ where: { id: authorId } });
-    if (!user) {
-      return res.status(401).json({
-        status: 'fail',
-        message: 'Unauthorized: User not found.',
-      });
-    }
-
     const slug = await generateUniqueSlug(title);
 
     const course = await prisma.course.create({
@@ -197,27 +188,8 @@ const getCourseBySlug = async (req, res) => {
 const updateCourse = async (req, res) => {
   const { id } = req.params;
   const { title, uploader, description } = req.body;
-  const userId = req.user.userId;
 
   try {
-    const course = await prisma.course.findUnique({
-      where: { id: parseInt(id) },
-    });
-
-    if (!course) {
-      return res.status(404).json({
-        status: 'fail',
-        message: 'Course not found.',
-      });
-    }
-
-    if (course.authorId !== userId) {
-      return res.status(403).json({
-        status: 'fail',
-        message: 'Forbidden: You can only update your own courses.',
-      });
-    }
-
     const dataToUpdate = { title, uploader, description };
     if (title) {
       dataToUpdate.slug = await generateUniqueSlug(title);
@@ -253,27 +225,8 @@ const updateCourse = async (req, res) => {
 // Delete a course
 const deleteCourse = async (req, res) => {
   const { id } = req.params;
-  const userId = req.user.userId;
 
   try {
-    const course = await prisma.course.findUnique({
-      where: { id: parseInt(id) },
-    });
-
-    if (!course) {
-      return res.status(404).json({
-        status: 'fail',
-        message: 'Course not found.',
-      });
-    }
-
-    if (course.authorId !== userId) {
-      return res.status(403).json({
-        status: 'fail',
-        message: 'Forbidden: You can only delete your own courses.',
-      });
-    }
-
     await prisma.course.delete({
       where: { id: parseInt(id) },
     });

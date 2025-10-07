@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const teamController = require('../controllers/team.controller');
-const { authenticateToken } = require('../middlewares/auth');
+const { authenticateToken, isAdmin } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/upload');
 const compressImage = require('../middlewares/compressImage');
 const { query } = require('express-validator');
@@ -17,10 +17,11 @@ const { query } = require('express-validator');
  * @swagger
  * /team:
  *   get:
- *     summary: Get all team members with pagination and search
+ *     summary: Get all team members with pagination and search (Authenticated users only)
  *     tags: [Team]
  *     security:
  *       - ApiKeyAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -42,8 +43,10 @@ const { query } = require('express-validator');
  *     responses:
  *       200:
  *         description: A list of team members
+ *       401:
+ *         description: Unauthorized
  *   post:
- *     summary: Create a new team member
+ *     summary: Create a new team member (Admin only)
  *     tags: [Team]
  *     security:
  *       - ApiKeyAuth: []
@@ -73,9 +76,12 @@ const { query } = require('express-validator');
  *     responses:
  *       201:
  *         description: Team member created successfully
+ *       403:
+ *         description: Forbidden
  */
 router.route('/')
   .get(
+    authenticateToken,
     [
       query('page').optional().isInt({ min: 1 }).toInt(),
       query('limit').optional().isInt({ min: 1 }).toInt(),
@@ -83,16 +89,17 @@ router.route('/')
     ],
     teamController.getAllTeamMembers
   )
-  .post(authenticateToken, uploadImage.single('picture'), compressImage, teamController.createTeamMember);
+  .post(authenticateToken, isAdmin, uploadImage.single('picture'), compressImage, teamController.createTeamMember);
 
 /**
  * @swagger
  * /team/{id}:
  *   get:
- *     summary: Get a team member by ID
+ *     summary: Get a team member by ID (Authenticated users only)
  *     tags: [Team]
  *     security:
  *       - ApiKeyAuth: []
+ *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -105,8 +112,10 @@ router.route('/')
  *         description: Team member data
  *       404:
  *         description: Team member not found
+ *       401:
+ *         description: Unauthorized
  *   put:
- *     summary: Update a team member
+ *     summary: Update a team member (Admin only)
  *     tags: [Team]
  *     security:
  *       - ApiKeyAuth: []
@@ -139,10 +148,12 @@ router.route('/')
  *     responses:
  *       200:
  *         description: Team member updated successfully
+ *       403:
+ *         description: Forbidden
  *       404:
  *         description: Team member not found
  *   delete:
- *     summary: Delete a team member
+ *     summary: Delete a team member (Admin only)
  *     tags: [Team]
  *     security:
  *       - ApiKeyAuth: []
@@ -157,12 +168,14 @@ router.route('/')
  *     responses:
  *       200:
  *         description: Team member deleted successfully
+ *       403:
+ *         description: Forbidden
  *       404:
  *         description: Team member not found
  */
 router.route('/:id')
-  .get(teamController.getTeamMemberById)
-  .put(authenticateToken, uploadImage.single('picture'), compressImage, teamController.updateTeamMember)
-  .delete(authenticateToken, teamController.deleteTeamMember);
+  .get(authenticateToken, teamController.getTeamMemberById)
+  .put(authenticateToken, isAdmin, uploadImage.single('picture'), compressImage, teamController.updateTeamMember)
+  .delete(authenticateToken, isAdmin, teamController.deleteTeamMember);
 
 module.exports = router;
