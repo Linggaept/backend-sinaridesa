@@ -5,7 +5,7 @@ const prisma = new PrismaClient();
 const createTeamMember = async (req, res) => {
   let { name, skills, position } = req.body;
 
-  if (!name || !skills || !position) {
+  if (!name || !position) {
     return res.status(400).json({
       status: 'fail',
       message: 'Name, skills, and position are required.',
@@ -26,12 +26,12 @@ const createTeamMember = async (req, res) => {
     skillsArray = skills;
   }
 
-  if (skillsArray.length === 0) {
-    return res.status(400).json({
-      status: 'fail',
-      message: 'Skills cannot be empty.',
-    });
-  }
+  // if (skillsArray.length === 0) {
+  //   return res.status(400).json({
+  //     status: 'fail',
+  //     message: 'Skills cannot be empty.',
+  //   });
+  // }
 
   try {
     const teamMember = await prisma.team.create({
