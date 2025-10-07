@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const dashboardController = require('../controllers/dashboard.controller');
-const authMiddleware = require('../middlewares/auth');
+const { authenticateToken } = require('../middlewares/auth');
 
 /**
  * @swagger
@@ -23,6 +23,6 @@ const authMiddleware = require('../middlewares/auth');
  *       200:
  *         description: Dashboard statistics
  */
-router.get('/stats', authMiddleware, dashboardController.getDashboardStats);
+router.get('/stats', authenticateToken, dashboardController.getDashboardStats);
 
 module.exports = router;

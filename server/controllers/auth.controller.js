@@ -15,7 +15,7 @@ const register = async (req, res) => {
 
   try {
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await prisma.user.create({
+    const user = await prisma.users.create({
       data: {
         email,
         name,
@@ -57,7 +57,7 @@ const login = async (req, res) => {
   }
 
   try {
-    const user = await prisma.user.findUnique({ where: { email } });
+    const user = await prisma.users.findUnique({ where: { email } });
 
     if (!user) {
       return res.status(401).json({
@@ -83,7 +83,7 @@ const login = async (req, res) => {
       expiresIn: '7d',
     });
 
-    await prisma.user.update({
+    await prisma.users.update({
       where: { id: user.id },
       data: { refreshToken },
     });
@@ -123,7 +123,7 @@ const refreshToken = async (req, res) => {
   }
 
   try {
-    const user = await prisma.user.findFirst({ where: { refreshToken } });
+    const user = await prisma.users.findFirst({ where: { refreshToken } });
 
     if (!user) {
       return res.status(403).json({ 
@@ -168,10 +168,10 @@ const logout = async (req, res) => {
     return res.sendStatus(204); // No content
   }
 
-  const user = await prisma.user.findFirst({ where: { refreshToken } });
+  const user = await prisma.users.findFirst({ where: { refreshToken } });
 
   if (user) {
-    await prisma.user.update({
+    await prisma.users.update({
       where: { id: user.id },
       data: { refreshToken: null },
     });

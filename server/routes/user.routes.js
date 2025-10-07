@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const userController = require('../controllers/user.controller');
-const authMiddleware = require('../middlewares/auth');
+const { authenticateToken } = require('../middlewares/auth');
 
 /**
  * @swagger
@@ -66,7 +66,7 @@ const authMiddleware = require('../middlewares/auth');
  *       404:
  *         description: User not found
  */
-router.put('/:id', authMiddleware, userController.updateUser);
-router.delete('/:id', authMiddleware, userController.deleteUser);
+router.put('/:id', authenticateToken, userController.updateUser);
+router.delete('/:id', authenticateToken, userController.deleteUser);
 
 module.exports = router;

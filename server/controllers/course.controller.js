@@ -38,7 +38,7 @@ const createCourse = async (req, res) => {
 
   try {
     // Verify the user exists before creating the course
-    const user = await prisma.user.findUnique({ where: { id: authorId } });
+    const user = await prisma.users.findUnique({ where: { id: authorId } });
     if (!user) {
       return res.status(401).json({
         status: 'fail',

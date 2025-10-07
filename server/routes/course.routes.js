@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const courseController = require('../controllers/course.controller');
-const authMiddleware = require('../middlewares/auth');
+const { authenticateToken } = require('../middlewares/auth');
 const { uploadCourseFiles } = require('../middlewares/upload');
 const compressImage = require('../middlewares/compressImage');
 const { query } = require('express-validator');
@@ -88,7 +88,7 @@ router.route('/')
     ],
     courseController.getAllCourses
   )
-  .post(authMiddleware, courseUpload, compressImage, courseController.createCourse);
+  .post(authenticateToken, courseUpload, compressImage, courseController.createCourse);
 
 /**
  * @swagger
@@ -187,7 +187,7 @@ router.route('/slug/:slug').get(courseController.getCourseBySlug);
  */
 router.route('/:id')
   .get(courseController.getCourseById)
-  .put(authMiddleware, courseUpload, compressImage, courseController.updateCourse)
-  .delete(authMiddleware, courseController.deleteCourse);
+  .put(authenticateToken, courseUpload, compressImage, courseController.updateCourse)
+  .delete(authenticateToken, courseController.deleteCourse);
 
 module.exports = router;

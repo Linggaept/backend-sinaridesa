@@ -13,7 +13,7 @@ const updateUser = async (req, res) => {
   }
 
   try {
-    const user = await prisma.user.update({
+    const user = await prisma.users.update({
       where: { id: parseInt(id) },
       data: { email, name },
     });
@@ -45,7 +45,7 @@ const deleteUser = async (req, res) => {
   }
 
   try {
-    await prisma.user.delete({
+    await prisma.users.delete({
       where: { id: parseInt(id) },
     });
     res.json({

@@ -14,28 +14,30 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model User {
-  id           Int      @id @default(autoincrement())
-  email        String   @unique
+model Users {
+  id           Int           @id @default(autoincrement())
+  email        String        @unique
   name         String?
   password     String
   refreshToken String?
+  role         Role          @default(USER)
   courses      Course[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  ChatHistory  ChatHistory[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
 }
 
 model Course {
   id          Int      @id @default(autoincrement())
   title       String
-  slug        String?   @unique
+  slug        String?  @unique
   uploader    String
   description String?
   filePath    String?
   thumbnail   String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-  author      User     @relation(fields: [authorId], references: [id])
+  author      Users    @relation(fields: [authorId], references: [id])
   authorId    Int
 }
 
@@ -50,9 +52,9 @@ model Team {
 }
 
 model Skill {
-  id      Int      @id @default(autoincrement())
-  name    String   @unique
-  teams   Team[]   @relation("TeamSkills")
+  id    Int    @id @default(autoincrement())
+  name  String @unique
+  teams Team[] @relation("TeamSkills")
 }
 
 enum Position {
@@ -61,15 +63,54 @@ enum Position {
 }
 
 model Event {
-  id           Int      @id @default(autoincrement())
+  id           Int           @id @default(autoincrement())
   title        String
-  slug         String?   @unique
+  slug         String?       @unique
   description  String?
   date         DateTime
   location     String
   participants Int
   thumbnail    String
   image        String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  certificates Certificate[]
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+}
+
+model Certificate {
+  id               Int      @id @default(autoincrement())
+  certificate_code String   @unique
+  hash             String   @unique
+  name             String
+  event            Event    @relation(fields: [eventId], references: [id])
+  eventId          Int
+  issued_at        DateTime
+  revoked          Boolean  @default(false)
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model ChatHistory {
+  id        Int          @id @default(autoincrement())
+  slug      String?      @unique
+  user      Users?       @relation(fields: [userId], references: [id])
+  userId    Int?
+  details   ChatDetail[]
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+}
+
+model ChatDetail {
+  id            Int         @id @default(autoincrement())
+  chatHistory   ChatHistory @relation(fields: [chatHistoryId], references: [id])
+  chatHistoryId Int
+  role          String
+  parts         String
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+enum Role {
+  ADMIN
+  USER
 }

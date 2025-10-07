@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const teamController = require('../controllers/team.controller');
-const authMiddleware = require('../middlewares/auth');
+const { authenticateToken } = require('../middlewares/auth');
 const { uploadImage } = require('../middlewares/upload');
 const compressImage = require('../middlewares/compressImage');
 const { query } = require('express-validator');
@@ -83,7 +83,7 @@ router.route('/')
     ],
     teamController.getAllTeamMembers
   )
-  .post(authMiddleware, uploadImage.single('picture'), compressImage, teamController.createTeamMember);
+  .post(authenticateToken, uploadImage.single('picture'), compressImage, teamController.createTeamMember);
 
 /**
  * @swagger
@@ -162,7 +162,7 @@ router.route('/')
  */
 router.route('/:id')
   .get(teamController.getTeamMemberById)
-  .put(authMiddleware, uploadImage.single('picture'), compressImage, teamController.updateTeamMember)
-  .delete(authMiddleware, teamController.deleteTeamMember);
+  .put(authenticateToken, uploadImage.single('picture'), compressImage, teamController.updateTeamMember)
+  .delete(authenticateToken, teamController.deleteTeamMember);
 
 module.exports = router;

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const eventController = require('../controllers/event.controller');
-const authMiddleware = require('../middlewares/auth');
+const { authenticateToken } = require('../middlewares/auth');
 const { uploadEventFiles } = require('../middlewares/upload');
 const compressImage = require('../middlewares/compressImage');
 const { query } = require('express-validator');
@@ -96,7 +96,7 @@ router.route('/')
     ],
     eventController.getAllEvents
   )
-  .post(authMiddleware, eventUploads, compressImage, eventController.createEvent);
+  .post(authenticateToken, eventUploads, compressImage, eventController.createEvent);
 
 /**
  * @swagger
@@ -203,7 +203,7 @@ router.route('/slug/:slug').get(eventController.getEventBySlug);
  */
 router.route('/:id')
   .get(eventController.getEventById)
-  .put(authMiddleware, eventUploads, compressImage, eventController.updateEvent)
-  .delete(authMiddleware, eventController.deleteEvent);
+  .put(authenticateToken, eventUploads, compressImage, eventController.updateEvent)
+  .delete(authenticateToken, eventController.deleteEvent);
 
 module.exports = router;

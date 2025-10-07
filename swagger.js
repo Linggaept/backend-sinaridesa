@@ -7,10 +7,16 @@ const options = {
       title: 'Sinari Desa API',
       version: '1.0.0',
       description: 'API documentation for the Backend Sinari Desa project.',
+      tags: [
+        {
+          name: 'Certificates',
+          description: 'The certificates managing API'
+        }
+      ]
     },
     servers: [
       {
-        url: 'http://localhost:5001',
+        url: 'http://localhost:5001/api',
         description: 'Development server',
       },
     ],
