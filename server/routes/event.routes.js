@@ -22,11 +22,8 @@ const eventUploads = uploadEventFiles.fields([
  * @swagger
  * /events:
  *   get:
- *     summary: Get all events with pagination and search (Authenticated users only)
+ *     summary: Get all events with pagination and search
  *     tags: [Events]
- *     security:
- *       - ApiKeyAuth: []
- *       - BearerAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -94,7 +91,6 @@ const eventUploads = uploadEventFiles.fields([
  */
 router.route('/')
   .get(
-    authenticateToken,
     [
       query('page').optional().isInt({ min: 1 }).toInt(),
       query('limit').optional().isInt({ min: 1 }).toInt(),
@@ -108,11 +104,8 @@ router.route('/')
  * @swagger
  * /events/slug/{slug}:
  *   get:
- *     summary: Get an event by slug (Authenticated users only)
+ *     summary: Get an event by slug
  *     tags: [Events]
- *     security:
- *       - ApiKeyAuth: []
- *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: slug
@@ -128,17 +121,14 @@ router.route('/')
  *       401:
  *         description: Unauthorized
  */
-router.route('/slug/:slug').get(authenticateToken, eventController.getEventBySlug);
+router.route('/slug/:slug').get(eventController.getEventBySlug);
 
 /**
  * @swagger
  * /events/{id}:
  *   get:
- *     summary: Get an event by ID (Authenticated users only)
+ *     summary: Get an event by ID
  *     tags: [Events]
- *     security:
- *       - ApiKeyAuth: []
- *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -218,7 +208,7 @@ router.route('/slug/:slug').get(authenticateToken, eventController.getEventBySlu
  *         description: Event not found
  */
 router.route('/:id')
-  .get(authenticateToken, eventController.getEventById)
+  .get(eventController.getEventById)
   .put(authenticateToken, isAdmin, eventUploads, compressImage, eventController.updateEvent)
   .delete(authenticateToken, isAdmin, eventController.deleteEvent);
 

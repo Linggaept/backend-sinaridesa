@@ -8,10 +8,14 @@ const options = {
       version: '1.0.0',
       description: 'API documentation for the Backend Sinari Desa project.',
       tags: [
-        {
-          name: 'Certificates',
-          description: 'The certificates managing API'
-        }
+        { name: 'Authentication', description: 'User authentication' },
+        { name: 'Users', description: 'User management' },
+        { name: 'Courses', description: 'Course management' },
+        { name: 'Team', description: 'Team management' },
+        { name: 'Events', description: 'Event management' },
+        { name: 'Dashboard', description: 'Dashboard statistics' },
+        { name: 'Certificates', description: 'The certificates managing API' },
+        { name: 'Chatbot', description: 'Chatbot using Gemini API' },
       ]
     },
     servers: [

@@ -83,6 +83,9 @@ const getAllEvents = async (req, res) => {
       where,
       skip: parseInt(skip),
       take: parseInt(limit),
+      orderBy: {
+        updatedAt: 'desc',
+      },
     });
 
     const totalEvents = await prisma.event.count({ where });

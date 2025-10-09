@@ -22,11 +22,8 @@ const courseUpload = uploadCourseFiles.fields([
  * @swagger
  * /courses:
  *   get:
- *     summary: Get all courses with pagination and search (Authenticated users only)
+ *     summary: Get all courses with pagination and search
  *     tags: [Courses]
- *     security:
- *       - ApiKeyAuth: []
- *       - BearerAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -86,7 +83,6 @@ const courseUpload = uploadCourseFiles.fields([
  */
 router.route('/')
   .get(
-    authenticateToken,
     [
       query('page').optional().isInt({ min: 1 }).toInt(),
       query('limit').optional().isInt({ min: 1 }).toInt(),
@@ -100,11 +96,8 @@ router.route('/')
  * @swagger
  * /courses/slug/{slug}:
  *   get:
- *     summary: Get a course by slug (Authenticated users only)
+ *     summary: Get a course by slug
  *     tags: [Courses]
- *     security:
- *       - ApiKeyAuth: []
- *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: slug
@@ -120,17 +113,14 @@ router.route('/')
  *       401:
  *         description: Unauthorized
  */
-router.route('/slug/:slug').get(authenticateToken, courseController.getCourseBySlug);
+router.route('/slug/:slug').get(courseController.getCourseBySlug);
 
 /**
  * @swagger
  * /courses/{id}:
  *   get:
- *     summary: Get a course by ID (Authenticated users only)
+ *     summary: Get a course by ID
  *     tags: [Courses]
- *     security:
- *       - ApiKeyAuth: []
- *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -202,7 +192,7 @@ router.route('/slug/:slug').get(authenticateToken, courseController.getCourseByS
  *         description: Course not found
  */
 router.route('/:id')
-  .get(authenticateToken, courseController.getCourseById)
+  .get(courseController.getCourseById)
   .put(authenticateToken, isAdmin, courseUpload, compressImage, courseController.updateCourse)
   .delete(authenticateToken, isAdmin, courseController.deleteCourse);
 

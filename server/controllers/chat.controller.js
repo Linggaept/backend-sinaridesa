@@ -295,9 +295,49 @@ const getAllChatHistories = async (req, res) => {
   }
 };
 
+const getChatHistoryByUser = async (req, res) => {
+  const { userId } = req.user; // Assuming authenticateToken middleware adds user to req
+
+  try {
+    const userChatHistories = await prisma.chatHistory.findMany({
+      where: { userId },
+      include: {
+        details: {
+          orderBy: {
+            createdAt: 'asc',
+          },
+        },
+      },
+      orderBy: {
+        updatedAt: 'desc',
+      },
+    });
+
+    if (!userChatHistories || userChatHistories.length === 0) {
+      return res.status(404).json({
+        status: 'fail',
+        message: 'No chat histories found for this user.',
+      });
+    }
+
+    res.json({
+      status: 'success',
+      message: 'User chat histories retrieved successfully.',
+      data: userChatHistories,
+    });
+  } catch (error) {
+    res.status(500).json({
+      status: 'error',
+      message: 'An internal server error occurred.',
+      error: error.message,
+    });
+  }
+};
+
 module.exports = {
   startNewChat,
   continueChat,
   getChatHistoryBySlug,
   getAllChatHistories,
+  getChatHistoryByUser,
 };

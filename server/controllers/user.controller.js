@@ -1,10 +1,52 @@
 const { PrismaClient } = require('../../generated/prisma');
 const prisma = new PrismaClient();
+const bcrypt = require('bcrypt');
+
+const createUser = async (req, res) => {
+    const { name, email, password, role } = req.body;
+
+    if (!name || !email || !password) {
+        return res.status(400).json({ status: 'fail', message: 'Name, email, and password are required.' });
+    }
+
+    try {
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const user = await prisma.users.create({
+            data: {
+                name,
+                email,
+                password: hashedPassword,
+                role,
+            },
+            select: { id: true, email: true, name: true, role: true, createdAt: true, updatedAt: true },
+        });
+        res.status(201).json({ status: 'success', message: 'User created successfully.', data: user });
+    } catch (error) {
+        if (error.code === 'P2002') {
+            return res.status(409).json({ status: 'fail', message: 'Email already exists.' });
+        }
+        res.status(500).json({ status: 'error', message: 'An internal server error occurred.', error: error.message });
+    }
+};
 
 const getAllUsers = async (req, res) => {
+    const { search } = req.query;
     try {
+        const where = search
+            ? {
+                OR: [
+                    { name: { contains: search, mode: 'insensitive' } },
+                    { email: { contains: search, mode: 'insensitive' } },
+                ],
+            }
+            : {};
+
         const users = await prisma.users.findMany({
+            where,
             select: { id: true, email: true, name: true, role: true, createdAt: true, updatedAt: true },
+            orderBy: {
+                updatedAt: 'desc',
+            },
         });
         res.json({ status: 'success', message: 'Users retrieved successfully.', data: users });
     } catch (error) {
@@ -89,4 +131,4 @@ const deleteUser = async (req, res) => {
   }
 };
 
-module.exports = { getAllUsers, getUserById, updateUser, deleteUser };
+module.exports = { createUser, getAllUsers, getUserById, updateUser, deleteUser };

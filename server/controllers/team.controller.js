@@ -97,6 +97,9 @@ const getAllTeamMembers = async (req, res) => {
       where,
       skip: parseInt(skip),
       take: parseInt(limit),
+      orderBy: {
+        updatedAt: 'desc',
+      },
       include: {
         skills: true, // Include skills in the response
       },

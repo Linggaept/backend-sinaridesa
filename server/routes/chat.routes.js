@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { startNewChat, continueChat, getChatHistoryBySlug, getAllChatHistories } = require('../controllers/chat.controller');
+const { startNewChat, continueChat, getChatHistoryBySlug, getAllChatHistories, getChatHistoryByUser } = require('../controllers/chat.controller');
 const { optionalAuthenticateToken, authenticateToken } = require('../middlewares/auth');
 
 /**
@@ -95,6 +95,25 @@ router.post('/:slug', optionalAuthenticateToken, continueChat);
  *         description: Unauthorized
  */
 router.get('/history', authenticateToken, getAllChatHistories);
+
+/**
+ * @swagger
+ * /chat/history/user:
+ *   get:
+ *     summary: Get all chat histories for the authenticated user
+ *     tags: [Chatbot]
+ *     security:
+ *       - ApiKeyAuth: []
+ *       - BearerAuth: []
+ *     responses:
+ *       200:
+ *         description: A list of chat histories for the user.
+ *       401:
+ *         description: Unauthorized
+ *       404:
+ *         description: No chat histories found for this user.
+ */
+router.get('/history/user', authenticateToken, getChatHistoryByUser);
 
 /**
  * @swagger

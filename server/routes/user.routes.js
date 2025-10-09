@@ -13,18 +13,63 @@ const { authenticateToken, isAdmin } = require('../middlewares/auth');
 /**
  * @swagger
  * /users:
+ *   post:
+ *     summary: Create a new user (Admin only)
+ *     tags: [Users]
+ *     security:
+ *       - ApiKeyAuth: []
+ *       - BearerAuth: []
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             required:
+ *               - name
+ *               - email
+ *               - password
+ *             properties:
+ *               name:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *                 format: email
+ *               password:
+ *                 type: string
+ *                 format: password
+ *               role:
+ *                 type: string
+ *                 enum: [USER, ADMIN]
+ *                 default: USER
+ *     responses:
+ *       211:
+ *         description: User created successfully
+ *       400:
+ *         description: Bad request
+ *       403:
+ *         description: Forbidden
+ *       409:
+ *         description: Email already exists
  *   get:
  *     summary: Get all users (Admin only)
  *     tags: [Users]
  *     security:
  *       - ApiKeyAuth: []
  *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: search
+ *         schema:
+ *           type: string
+ *         description: Search for users by name or email
  *     responses:
  *       200:
  *         description: A list of users
  *       403:
  *         description: Forbidden
  */
+router.post('/', authenticateToken, isAdmin, userController.createUser);
 router.get('/', authenticateToken, isAdmin, userController.getAllUsers);
 
 /**

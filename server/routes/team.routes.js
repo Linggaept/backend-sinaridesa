@@ -17,11 +17,8 @@ const { query } = require('express-validator');
  * @swagger
  * /team:
  *   get:
- *     summary: Get all team members with pagination and search (Authenticated users only)
+ *     summary: Get all team members with pagination and search
  *     tags: [Team]
- *     security:
- *       - ApiKeyAuth: []
- *       - BearerAuth: []
  *     parameters:
  *       - in: query
  *         name: page
@@ -81,7 +78,6 @@ const { query } = require('express-validator');
  */
 router.route('/')
   .get(
-    authenticateToken,
     [
       query('page').optional().isInt({ min: 1 }).toInt(),
       query('limit').optional().isInt({ min: 1 }).toInt(),
@@ -95,11 +91,8 @@ router.route('/')
  * @swagger
  * /team/{id}:
  *   get:
- *     summary: Get a team member by ID (Authenticated users only)
+ *     summary: Get a team member by ID
  *     tags: [Team]
- *     security:
- *       - ApiKeyAuth: []
- *       - BearerAuth: []
  *     parameters:
  *       - in: path
  *         name: id
@@ -174,7 +167,7 @@ router.route('/')
  *         description: Team member not found
  */
 router.route('/:id')
-  .get(authenticateToken, teamController.getTeamMemberById)
+  .get(teamController.getTeamMemberById)
   .put(authenticateToken, isAdmin, uploadImage.single('picture'), compressImage, teamController.updateTeamMember)
   .delete(authenticateToken, isAdmin, teamController.deleteTeamMember);
 

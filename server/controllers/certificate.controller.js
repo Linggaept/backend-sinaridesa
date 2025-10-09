@@ -26,7 +26,11 @@ const createCertificate = async (req, res) => {
 
 const getAllCertificates = async (req, res) => {
   try {
-    const certificates = await prisma.certificate.findMany();
+    const certificates = await prisma.certificate.findMany({
+      orderBy: {
+        updatedAt: 'desc',
+      },
+    });
     res.status(200).json(certificates);
   } catch (error) {
     res.status(500).json({ error: 'Failed to fetch certificates' });
@@ -138,6 +142,63 @@ const createBatchCertificates = async (req, res) => {
   }
 };
 
+const revokeCertificate = async (req, res) => {
+  const { id } = req.params;
+  try {
+    const certificate = await prisma.certificate.findUnique({
+      where: { id: parseInt(id) },
+    });
+
+    if (!certificate) {
+      return res.status(404).json({ error: 'Certificate not found' });
+    }
+
+    if (certificate.revoked) {
+      return res.status(400).json({ error: 'Certificate has already been revoked' });
+    }
+
+    const revokedCertificate = await prisma.certificate.update({
+      where: { id: parseInt(id) },
+      data: {
+        revoked: true,
+      },
+    });
+    res.status(200).json(revokedCertificate);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to revoke certificate' });
+  }
+};
+
+const searchCertificates = async (req, res) => {
+  const { query } = req.query;
+  try {
+    const certificates = await prisma.certificate.findMany({
+      where: {
+        OR: [
+          {
+            name: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+          {
+            certificate_code: {
+              contains: query,
+              mode: 'insensitive',
+            },
+          },
+        ],
+      },
+      orderBy: {
+        updatedAt: 'desc',
+      },
+    });
+    res.status(200).json(certificates);
+  } catch (error) {
+    res.status(500).json({ error: 'Failed to search certificates' });
+  }
+};
+
 module.exports = {
   createCertificate,
   createBatchCertificates,
@@ -146,4 +207,6 @@ module.exports = {
   updateCertificate,
   deleteCertificate,
   verifyCertificate,
+  revokeCertificate,
+  searchCertificates,
 };

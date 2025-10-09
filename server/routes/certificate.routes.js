@@ -165,6 +165,32 @@ router.get('/', authenticateToken, certificateController.getAllCertificates);
 
 /**
  * @swagger
+ * /certificates/search:
+ *   get:
+ *     summary: Search for certificates by name or certificate code (Authenticated users only)
+ *     tags: [Certificates]
+ *     security:
+ *       - ApiKeyAuth: []
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: query
+ *         name: query
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: The search query
+ *     responses:
+ *       200:
+ *         description: A list of certificates matching the search query.
+ *       401:
+ *         description: Unauthorized.
+ *       500:
+ *         description: Failed to search certificates.
+ */
+router.get('/search', authenticateToken, certificateController.searchCertificates);
+
+/**
+ * @swagger
  * /certificates/{id}:
  *   get:
  *     summary: Get the certificate by id (Authenticated users only)
@@ -229,6 +255,34 @@ router.get('/:id', authenticateToken, certificateController.getCertificateById);
  *         description: The certificate was not found.
  */
 router.put('/:id', authenticateToken, isAdmin, certificateController.updateCertificate);
+
+/**
+ * @swagger
+ * /certificates/{id}/revoke:
+ *   patch:
+ *     summary: Revoke the certificate by the id (Admin only)
+ *     tags: [Certificates]
+ *     security:
+ *       - ApiKeyAuth: []
+ *       - BearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: id
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: The certificate id
+ *     responses:
+ *       200:
+ *         description: The certificate was revoked.
+ *       400:
+ *         description: Certificate has already been revoked.
+ *       403:
+ *         description: Forbidden.
+ *       404:
+ *         description: The certificate was not found.
+ */
+router.patch('/:id/revoke', authenticateToken, isAdmin, certificateController.revokeCertificate);
 
 /**
  * @swagger
