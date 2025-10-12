@@ -53,6 +53,8 @@ const startNewChat = async (req, res) => {
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-pro",
       generationConfig,
+      systemInstruction:
+        "Anda adalah AI Sinari Desa, asisten yang membantu untuk aplikasi Sinari Desa. Nada bicara Anda ramah dan profesional. Saat ditanya siapa Anda, Anda harus menjawab dengan 'saya adalah AI Sinari Desa'. Jangan terlibat dalam percakapan panjang dan spekulatif tentang orang yang tidak Anda kenal; cukup nyatakan bahwa Anda tidak memiliki informasi tersebut.",
     });
     const chatSession = model.startChat({ history: [] });
     const result = await chatSession.sendMessage(message);
@@ -97,13 +99,11 @@ const startNewChat = async (req, res) => {
 
     res.status(201).json(responseData);
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        status: "error",
-        message: "An internal server error occurred.",
-        error: error.message,
-      });
+    res.status(500).json({
+      status: "error",
+      message: "An internal server error occurred.",
+      error: error.message,
+    });
   }
 };
 
@@ -133,12 +133,10 @@ const continueChat = async (req, res) => {
 
     // Authorization check: Ensure user can access this chat
     if (chatHistory.userId && (!user || chatHistory.userId !== user.userId)) {
-      return res
-        .status(403)
-        .json({
-          status: "fail",
-          message: "Forbidden. You do not have access to this chat history.",
-        });
+      return res.status(403).json({
+        status: "fail",
+        message: "Forbidden. You do not have access to this chat history.",
+      });
     }
 
     // Unauthenticated user message limit check
@@ -150,13 +148,11 @@ const continueChat = async (req, res) => {
         try {
           const decoded = jwt.verify(token, process.env.JWT_SECRET);
           if (decoded.messageCount >= 10) {
-            return res
-              .status(429)
-              .json({
-                status: "fail",
-                message:
-                  "You have reached the message limit. Please log in to continue.",
-              });
+            return res.status(429).json({
+              status: "fail",
+              message:
+                "You have reached the message limit. Please log in to continue.",
+            });
           }
           // Update token for the next request
           temporaryToken = jwt.sign(
@@ -184,6 +180,8 @@ const continueChat = async (req, res) => {
     const model = genAI.getGenerativeModel({
       model: "gemini-2.5-pro",
       generationConfig,
+      systemInstruction:
+        "Anda adalah AI Sinari Desa, asisten yang membantu untuk aplikasi Sinari Desa. Nada bicara Anda ramah dan profesional. Saat ditanya siapa Anda, Anda harus menjawab dengan 'saya adalah AI Sinari Desa'. Jangan terlibat dalam percakapan panjang dan spekulatif tentang orang yang tidak Anda kenal; cukup nyatakan bahwa Anda tidak memiliki informasi tersebut.",
     });
     const chatSession = model.startChat({
       history: chatHistory.details.map((detail) => ({
@@ -215,13 +213,11 @@ const continueChat = async (req, res) => {
 
     res.json(responseData);
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        status: "error",
-        message: "An internal server error occurred.",
-        error: error.message,
-      });
+    res.status(500).json({
+      status: "error",
+      message: "An internal server error occurred.",
+      error: error.message,
+    });
   }
 };
 
@@ -245,12 +241,10 @@ const getChatHistoryBySlug = async (req, res) => {
 
     // Authorization check
     if (chatHistory.userId && (!user || chatHistory.userId !== user.userId)) {
-      return res
-        .status(403)
-        .json({
-          status: "fail",
-          message: "Forbidden. You do not have access to this chat history.",
-        });
+      return res.status(403).json({
+        status: "fail",
+        message: "Forbidden. You do not have access to this chat history.",
+      });
     }
 
     res.json({
@@ -259,13 +253,11 @@ const getChatHistoryBySlug = async (req, res) => {
       data: chatHistory,
     });
   } catch (error) {
-    res
-      .status(500)
-      .json({
-        status: "error",
-        message: "An internal server error occurred.",
-        error: error.message,
-      });
+    res.status(500).json({
+      status: "error",
+      message: "An internal server error occurred.",
+      error: error.message,
+    });
   }
 };
 
@@ -304,31 +296,31 @@ const getChatHistoryByUser = async (req, res) => {
       include: {
         details: {
           orderBy: {
-            createdAt: 'asc',
+            createdAt: "asc",
           },
         },
       },
       orderBy: {
-        updatedAt: 'desc',
+        updatedAt: "desc",
       },
     });
 
     if (!userChatHistories || userChatHistories.length === 0) {
       return res.status(404).json({
-        status: 'fail',
-        message: 'No chat histories found for this user.',
+        status: "fail",
+        message: "No chat histories found for this user.",
       });
     }
 
     res.json({
-      status: 'success',
-      message: 'User chat histories retrieved successfully.',
+      status: "success",
+      message: "User chat histories retrieved successfully.",
       data: userChatHistories,
     });
   } catch (error) {
     res.status(500).json({
-      status: 'error',
-      message: 'An internal server error occurred.',
+      status: "error",
+      message: "An internal server error occurred.",
       error: error.message,
     });
   }

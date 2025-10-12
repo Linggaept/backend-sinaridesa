@@ -30,6 +30,9 @@ const getAllCertificates = async (req, res) => {
       orderBy: {
         updatedAt: 'desc',
       },
+      include: {
+        event: true,
+      },
     });
     res.status(200).json(certificates);
   } catch (error) {

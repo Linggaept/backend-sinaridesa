@@ -8,11 +8,49 @@ const { authenticateToken, isAdmin } = require('../middlewares/auth');
  * @swagger
  * components:
  *   schemas:
+ *     Event:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: integer
+ *           description: The auto-generated id of the event.
+ *         title:
+ *           type: string
+ *           description: The title of the event.
+ *         slug:
+ *           type: string
+ *           description: The slug of the event.
+ *         description:
+ *           type: string
+ *           description: The description of the event.
+ *         date:
+ *           type: string
+ *           format: date-time
+ *           description: The date of the event.
+ *         location:
+ *           type: string
+ *           description: The location of the event.
+ *         participants:
+ *           type: integer
+ *           description: The number of participants in the event.
+ *         thumbnail:
+ *           type: string
+ *           description: The URL of the event thumbnail.
+ *         image:
+ *           type: string
+ *           description: The URL of the event image.
+ *         createdAt:
+ *           type: string
+ *           format: date-time
+ *           description: The date and time the event was created.
+ *         updatedAt:
+ *           type: string
+ *           format: date-time
+ *           description: The date and time the event was last updated.
  *     Certificate:
  *       type: object
  *       required:
  *         - name
- *         - eventId
  *       properties:
  *         id:
  *           type: integer
@@ -26,9 +64,8 @@ const { authenticateToken, isAdmin } = require('../middlewares/auth');
  *         name:
  *           type: string
  *           description: The name of the certificate holder.
- *         eventId:
- *           type: integer
- *           description: The id of the event.
+ *         event:
+ *           $ref: '#/components/schemas/Event'
  *         issued_at:
  *           type: string
  *           format: date-time
@@ -158,6 +195,12 @@ router.post('/batch', authenticateToken, isAdmin, certificateController.createBa
  *     responses:
  *       200:
  *         description: The list of the certificates.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Certificate'
  *       401:
  *         description: Unauthorized.
  */
