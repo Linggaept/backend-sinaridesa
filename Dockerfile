@@ -2,13 +2,17 @@ FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy package.json
+# Copy package files
 COPY package*.json ./
 
-# Install dependencies
-RUN npm install --production && npm cache clean --force
+# Copy prisma schema. Ini penting untuk langkah generate.
+COPY prisma ./prisma/
 
-# Copy semua source code
+# Install SEMUA dependencies (termasuk devDependencies agar 'prisma' CLI ada)
+# LALU jalankan prisma generate
+RUN npm install && npx prisma generate
+
+# Copy sisa source code Anda
 COPY . .
 
 EXPOSE 5000
