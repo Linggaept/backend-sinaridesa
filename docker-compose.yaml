@@ -24,7 +24,7 @@ services:
     container_name: express_container
     restart: always
     ports:
-      - "5001:5000"
+      - "5001:5001"
     environment:
       NODE_ENV: production
       DATABASE_URL: "postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@${POSTGRES_HOST}:${POSTGRES_PORT}/${POSTGRES_DB}?schema=public"
