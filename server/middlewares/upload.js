@@ -51,7 +51,7 @@ const checkPdfType = (file, cb) => {
 
 const uploadImage = multer({
   storage: storage,
-  limits: { fileSize: 10000000 }, // 2MB limit
+  limits: { fileSize: 10000000 }, // 10MB limit
   fileFilter: (req, file, cb) => {
     checkImageType(file, cb);
   }
