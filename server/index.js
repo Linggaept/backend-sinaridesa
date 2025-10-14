@@ -22,6 +22,7 @@ app.use(
       "http://localhost:3000",
       "http://localhost:5173",
       "http://localhost:5000",
+      "http://localhost:5001",
       "https://sinaridesa.com",
       "https://www.sinaridesa.com",
       "http://20.6.8.101"
