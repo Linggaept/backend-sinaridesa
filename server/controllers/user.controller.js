@@ -1,102 +1,209 @@
-const { PrismaClient } = require('../../generated/prisma');
+const { PrismaClient } = require("../../generated/prisma");
 const prisma = new PrismaClient();
-const bcrypt = require('bcrypt');
+const bcrypt = require("bcrypt");
 
 const createUser = async (req, res) => {
-    const { name, email, password, role } = req.body;
+  const { name, email, password } = req.body;
 
-    if (!name || !email || !password) {
-        return res.status(400).json({ status: 'fail', message: 'Name, email, and password are required.' });
-    }
+  if (!name || !email || !password) {
+    return res
+      .status(400)
+      .json({
+        status: "fail",
+        message: "Name, email, and password are required.",
+      });
+  }
 
-    try {
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const user = await prisma.users.create({
-            data: {
-                name,
-                email,
-                password: hashedPassword,
-                role,
-            },
-            select: { id: true, email: true, name: true, role: true, createdAt: true, updatedAt: true },
-        });
-        res.status(201).json({ status: 'success', message: 'User created successfully.', data: user });
-    } catch (error) {
-        if (error.code === 'P2002') {
-            return res.status(409).json({ status: 'fail', message: 'Email already exists.' });
-        }
-        res.status(500).json({ status: 'error', message: 'An internal server error occurred.', error: error.message });
+  try {
+    const hashedPassword = await bcrypt.hash(password, 10);
+    const user = await prisma.users.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        role: "USER", // Hardcode role to USER for all new sign-ups
+      },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    res
+      .status(201)
+      .json({
+        status: "success",
+        message: "User created successfully.",
+        data: user,
+      });
+  } catch (error) {
+    if (error.code === "P2002") {
+      return res
+        .status(409)
+        .json({ status: "fail", message: "Email already exists." });
     }
+    res
+      .status(500)
+      .json({
+        status: "error",
+        message: "An internal server error occurred.",
+        error: error.message,
+      });
+  }
 };
 
 const getAllUsers = async (req, res) => {
-    const { search } = req.query;
-    try {
-        const where = search
-            ? {
-                OR: [
-                    { name: { contains: search, mode: 'insensitive' } },
-                    { email: { contains: search, mode: 'insensitive' } },
-                ],
-            }
-            : {};
+  const { search } = req.query;
+  try {
+    const where = search
+      ? {
+          OR: [
+            { name: { contains: search, mode: "insensitive" } },
+            { email: { contains: search, mode: "insensitive" } },
+          ],
+        }
+      : {};
 
-        const users = await prisma.users.findMany({
-            where,
-            select: { id: true, email: true, name: true, role: true, createdAt: true, updatedAt: true },
-            orderBy: {
-                updatedAt: 'desc',
-            },
-        });
-        res.json({ status: 'success', message: 'Users retrieved successfully.', data: users });
-    } catch (error) {
-        res.status(500).json({ status: 'error', message: 'An internal server error occurred.', error: error.message });
-    }
+    const users = await prisma.users.findMany({
+      where,
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+      orderBy: {
+        updatedAt: "desc",
+      },
+    });
+    res.json({
+      status: "success",
+      message: "Users retrieved successfully.",
+      data: users,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({
+        status: "error",
+        message: "An internal server error occurred.",
+        error: error.message,
+      });
+  }
 };
 
 const getUserById = async (req, res) => {
-    const { id } = req.params;
-    try {
-        const user = await prisma.users.findUnique({
-            where: { id: parseInt(id) },
-            select: { id: true, email: true, name: true, role: true, createdAt: true, updatedAt: true },
-        });
-        if (!user) {
-            return res.status(404).json({ status: 'fail', message: 'User not found.' });
-        }
-        res.json({ status: 'success', message: 'User retrieved successfully.', data: user });
-    } catch (error) {
-        res.status(500).json({ status: 'error', message: 'An internal server error occurred.', error: error.message });
+  const { id } = req.params;
+  try {
+    const user = await prisma.users.findUnique({
+      where: { id: parseInt(id) },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+      },
+    });
+    if (!user) {
+      return res
+        .status(404)
+        .json({ status: "fail", message: "User not found." });
     }
+    res.json({
+      status: "success",
+      message: "User retrieved successfully.",
+      data: user,
+    });
+  } catch (error) {
+    res
+      .status(500)
+      .json({
+        status: "error",
+        message: "An internal server error occurred.",
+        error: error.message,
+      });
+  }
 };
 
 const updateUser = async (req, res) => {
   const { id } = req.params;
-  const { email, name } = req.body;
+  const { email, name, role } = req.body;
+  const targetUserId = parseInt(id);
+  const loggedInUser = req.user;
 
-  if (req.user.id !== parseInt(id)) {
+  // 1. Authorization: Who can update what?
+  const isUpdatingOwnProfile = loggedInUser.id === targetUserId;
+  const isAdmin = loggedInUser.role === "ADMIN";
+
+  if (!isUpdatingOwnProfile && !isAdmin) {
     return res.status(403).json({
-      status: 'fail',
-      message: 'Forbidden: You can only update your own profile.',
+      status: "fail",
+      message: "Forbidden: You can only update your own profile.",
     });
   }
 
+  // 2. Role update authorization
+  if (role && !isAdmin) {
+    return res.status(403).json({
+      status: "fail",
+      message: "Forbidden: You are not authorized to change user roles.",
+    });
+  }
+
+  // 3. Prepare data for update
+  const dataToUpdate = {};
+  if (name) dataToUpdate.name = name;
+  if (email) dataToUpdate.email = email;
+  if (role && isAdmin) dataToUpdate.role = role; // Only add role if admin
+
+  if (Object.keys(dataToUpdate).length === 0) {
+    return res.status(400).json({
+      status: "fail",
+      message: "No fields to update provided.",
+    });
+  }
+
+  // 4. Perform update
   try {
     const user = await prisma.users.update({
-      where: { id: parseInt(id) },
-      data: { email, name },
-      select: { id: true, email: true, name: true, role: true, createdAt: true, updatedAt: true },
+      where: { id: targetUserId },
+      data: dataToUpdate,
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        createdAt: true,
+        updatedAt: true,
+      },
     });
 
     res.json({
-      status: 'success',
-      message: 'User updated successfully.',
+      status: "success",
+      message: "User updated successfully.",
       data: user,
     });
   } catch (error) {
+    if (error.code === "P2025") {
+      return res
+        .status(404)
+        .json({ status: "fail", message: "User not found." });
+    }
+    if (error.code === "P2002") {
+      return res
+        .status(409)
+        .json({ status: "fail", message: "Email already exists." });
+    }
     res.status(500).json({
-      status: 'error',
-      message: 'An internal server error occurred.',
+      status: "error",
+      message: "An internal server error occurred.",
       error: error.message,
     });
   }
@@ -107,7 +214,9 @@ const deleteUser = async (req, res) => {
 
   // Optional: Prevent admin from deleting themselves
   if (req.user.id === parseInt(id)) {
-      return res.status(400).json({ status: 'fail', message: 'You cannot delete your own account.'});
+    return res
+      .status(400)
+      .json({ status: "fail", message: "You cannot delete your own account." });
   }
 
   try {
@@ -115,20 +224,28 @@ const deleteUser = async (req, res) => {
       where: { id: parseInt(id) },
     });
     res.json({
-      status: 'success',
-      message: 'User deleted successfully.',
+      status: "success",
+      message: "User deleted successfully.",
     });
   } catch (error) {
     // Handle case where user is not found
-    if (error.code === 'P2025') {
-        return res.status(404).json({ status: 'fail', message: 'User not found.' });
+    if (error.code === "P2025") {
+      return res
+        .status(404)
+        .json({ status: "fail", message: "User not found." });
     }
     res.status(500).json({
-      status: 'error',
-      message: 'An internal server error occurred.',
+      status: "error",
+      message: "An internal server error occurred.",
       error: error.message,
     });
   }
 };
 
-module.exports = { createUser, getAllUsers, getUserById, updateUser, deleteUser };
+module.exports = {
+  createUser,
+  getAllUsers,
+  getUserById,
+  updateUser,
+  deleteUser,
+};

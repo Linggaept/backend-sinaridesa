@@ -13,7 +13,7 @@ COPY prisma ./prisma/
 RUN npm install && npx prisma generate
 
 # Migrate db
-RUN npx prisma migrate deploy
+RUN npx prisma migrate deploy && npx prisma db seed
 
 # Copy sisa source code Anda
 COPY . .

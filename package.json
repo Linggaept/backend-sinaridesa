@@ -13,6 +13,9 @@
     "docker:down": "docker-compose down",
     "docker:build": "docker-compose up --build -d"
   },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
   "keywords": [],
   "author": "",
   "license": "ISC",
