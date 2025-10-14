@@ -134,7 +134,7 @@ const getUserById = async (req, res) => {
 
 const updateUser = async (req, res) => {
   const { id } = req.params;
-  const { email, name, role } = req.body;
+  const { email, name, role, password } = req.body;
   const targetUserId = parseInt(id);
   const loggedInUser = req.user;
 
@@ -162,6 +162,17 @@ const updateUser = async (req, res) => {
   if (name) dataToUpdate.name = name;
   if (email) dataToUpdate.email = email;
   if (role && isAdmin) dataToUpdate.role = role; // Only add role if admin
+
+  // Handle password update
+  if (password) {
+    if (password.length < 6) {
+      return res.status(400).json({
+        status: "fail",
+        message: "Password must be at least 6 characters long.",
+      });
+    }
+    dataToUpdate.password = await bcrypt.hash(password, 10);
+  }
 
   if (Object.keys(dataToUpdate).length === 0) {
     return res.status(400).json({

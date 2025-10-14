@@ -120,6 +120,10 @@ router.get('/', authenticateToken, isAdmin, userController.getAllUsers);
  *                 format: email
  *               name:
  *                 type: string
+ *               password:
+ *                 type: string
+ *                 format: password
+ *                 description: Optional, min 6 characters
  *     responses:
  *       200:
  *         description: User updated successfully
