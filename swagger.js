@@ -20,7 +20,7 @@ const options = {
     },
     servers: [
       {
-        url: 'http://localhost:5001/api',
+        url: process.env.SWAGGER_URL_DEV || process.env.SWAGGER_URL_PROD,
         description: 'Development server',
       },
     ],
