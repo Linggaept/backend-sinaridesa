@@ -124,6 +124,10 @@ router.get('/', authenticateToken, isAdmin, userController.getAllUsers);
  *                 type: string
  *                 format: password
  *                 description: Optional, min 6 characters
+ *               role:
+ *                 type: string
+ *                 enum: [USER, ADMIN]
+ *                 description: Optional. Can only be changed by an admin.
  *     responses:
  *       200:
  *         description: User updated successfully

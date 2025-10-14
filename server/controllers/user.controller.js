@@ -149,21 +149,12 @@ const updateUser = async (req, res) => {
     });
   }
 
-  // 2. Role update authorization
-  if (role && !isAdmin) {
-    return res.status(403).json({
-      status: "fail",
-      message: "Forbidden: You are not authorized to change user roles.",
-    });
-  }
-
-  // 3. Prepare data for update
+  // 2. Prepare data for update
   const dataToUpdate = {};
   if (name) dataToUpdate.name = name;
   if (email) dataToUpdate.email = email;
-  if (role && isAdmin) dataToUpdate.role = role; // Only add role if admin
 
-  // Handle password update
+  // 3. Handle optional password update
   if (password) {
     if (password.length < 6) {
       return res.status(400).json({
@@ -174,6 +165,21 @@ const updateUser = async (req, res) => {
     dataToUpdate.password = await bcrypt.hash(password, 10);
   }
 
+  // 4. Handle optional role update (securely)
+  // Check if 'role' was explicitly provided in the request body
+  if (role !== undefined) {
+    // If it was, only admins are allowed to proceed with a role change.
+    if (!isAdmin) {
+      return res.status(403).json({
+        status: "fail",
+        message: "Forbidden: You are not authorized to change user roles.",
+      });
+    }
+    // If the user is an admin, apply the role from the request.
+    dataToUpdate.role = role;
+  }
+
+  // 5. Check if there is any data to update
   if (Object.keys(dataToUpdate).length === 0) {
     return res.status(400).json({
       status: "fail",
@@ -181,7 +187,7 @@ const updateUser = async (req, res) => {
     });
   }
 
-  // 4. Perform update
+  // 6. Perform update
   try {
     const user = await prisma.users.update({
       where: { id: targetUserId },
