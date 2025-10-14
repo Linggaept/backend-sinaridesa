@@ -8,7 +8,7 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
 // Helper function to generate a unique slug
 const generateUniqueSlug = async (message) => {
   const slugPrompt = `Summarize the following user query into a 3-5 word, URL-friendly slug: "${message}"`;
-  const model = genAI.getGenerativeModel({ model: "gemini-2.5-pro" });
+  const model = genAI.getGenerativeModel({ model: "gemini-2.5-flash" });
   const result = await model.generateContent(slugPrompt);
   const response = await result.response;
   let slug = response
@@ -39,7 +39,7 @@ const startNewChat = async (req, res) => {
   try {
     // 1. Create a new ChatHistory
     const chatHistory = await prisma.chatHistory.create({
-      data: { userId: user ? user.userId : null },
+      data: { userId: user ? user.id : null },
     });
 
     // 2. Get AI response for the first message
@@ -132,7 +132,7 @@ const continueChat = async (req, res) => {
     }
 
     // Authorization check: Ensure user can access this chat
-    if (chatHistory.userId && (!user || chatHistory.userId !== user.userId)) {
+    if (chatHistory.userId && (!user || chatHistory.userId !== user.id)) {
       return res.status(403).json({
         status: "fail",
         message: "Forbidden. You do not have access to this chat history.",
@@ -240,7 +240,7 @@ const getChatHistoryBySlug = async (req, res) => {
     }
 
     // Authorization check
-    if (chatHistory.userId && (!user || chatHistory.userId !== user.userId)) {
+    if (chatHistory.userId && (!user || chatHistory.userId !== user.id)) {
       return res.status(403).json({
         status: "fail",
         message: "Forbidden. You do not have access to this chat history.",
@@ -288,7 +288,7 @@ const getAllChatHistories = async (req, res) => {
 };
 
 const getChatHistoryByUser = async (req, res) => {
-  const { userId } = req.user; // Assuming authenticateToken middleware adds user to req
+  const { id: userId } = req.user; // Assuming authenticateToken middleware adds user to req
 
   try {
     const userChatHistories = await prisma.chatHistory.findMany({
