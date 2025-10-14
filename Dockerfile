@@ -12,9 +12,6 @@ COPY prisma ./prisma/
 # LALU jalankan prisma generate
 RUN npm install && npx prisma generate
 
-# Migrate db
-RUN npx prisma migrate deploy && npx prisma db seed
-
 # Copy sisa source code Anda
 COPY . .
 
