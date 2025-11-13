@@ -16,6 +16,7 @@ const options = {
         { name: 'Dashboard', description: 'Dashboard statistics' },
         { name: 'Certificates', description: 'The certificates managing API' },
         { name: 'Chatbot', description: 'Chatbot using Gemini API' },
+        { name: 'Export', description: 'Database export' },
       ]
     },
     servers: [
@@ -24,7 +25,7 @@ const options = {
         description: 'Development server',
       },
       {
-        url: 'http://20.6.8.101/api',
+        url: 'https://api.sinaridesa.com/api',
         description: 'Production server',
       },
     ],

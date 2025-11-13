@@ -8,6 +8,7 @@ const eventRoutes = require('./event.routes');
 const dashboardRoutes = require('./dashboard.routes');
 const certificateRoutes = require('./certificate.routes');
 const chatRoutes = require('./chat.routes');
+const exportRoutes = require('./export.routes');
 
 router.use('/auth', authRoutes);
 router.use('/users', userRoutes);
@@ -17,5 +18,6 @@ router.use('/events', eventRoutes);
 router.use('/dashboard', dashboardRoutes);
 router.use('/certificates', certificateRoutes);
 router.use('/chat', chatRoutes);
+router.use('/', exportRoutes);
 
 module.exports = router;
