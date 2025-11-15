@@ -25,6 +25,10 @@ app.use(
       "http://localhost:5001",
       "https://sinaridesa.com",
       "https://www.sinaridesa.com",
+      "http://www.api.sinaridesa.com",
+      "http://api.sinaridesa.com",
+      "https://api.sinaridesa.com",
+      "https://www.api.sinaridesa.com",
       "http://20.6.8.101",
       "http://35.219.118.229"
     ],
