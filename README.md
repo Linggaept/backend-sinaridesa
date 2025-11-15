@@ -64,6 +64,9 @@ Untuk men-deploy aplikasi ke server produksi (misalnya VM):
 4.  **Buat config nginx:**
     Perintah ini akan menerapkan migrasi yang ada ke database produksi Anda.
 
+    1. sudo nano /etc/nginx/sites-available/backend-sinaridesa
+    masukan script dibawah!
+
     ```bash
     server {
     listen 80;
@@ -87,6 +90,8 @@ Untuk men-deploy aplikasi ke server produksi (misalnya VM):
 
     }
     ```
+
+    2. sudo ln -s /etc/nginx/sites-available/backend-sinaridesa /etc/nginx/sites-enabled/
 
 5.  **Restart nginx dan test pastikan ok:**
 
