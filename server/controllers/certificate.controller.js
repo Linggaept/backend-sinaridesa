@@ -1,12 +1,16 @@
+const prisma = require("../lib/prisma");
+const crypto = require("crypto");
+const NodeCache = require("node-cache");
 
-const { PrismaClient } = require('../../generated/prisma');
-const prisma = new PrismaClient();
-const crypto = require('crypto');
+const certificateCache = new NodeCache({ stdTTL: 3600 }); // Cache for 1 hour (3600 seconds)
 
 const createCertificate = async (req, res) => {
   const { name, eventId } = req.body;
   const certificate_code = `SINARI-2025-${Date.now()}`;
-  const hash = crypto.createHash('sha256').update(certificate_code).digest('hex');
+  const hash = crypto
+    .createHash("sha256")
+    .update(certificate_code)
+    .digest("hex");
 
   try {
     const newCertificate = await prisma.certificate.create({
@@ -20,7 +24,7 @@ const createCertificate = async (req, res) => {
     });
     res.status(201).json(newCertificate);
   } catch (error) {
-    res.status(400).json({ error: 'Failed to create certificate' });
+    res.status(400).json({ error: "Failed to create certificate" });
   }
 };
 
@@ -28,7 +32,7 @@ const getAllCertificates = async (req, res) => {
   try {
     const certificates = await prisma.certificate.findMany({
       orderBy: {
-        updatedAt: 'desc',
+        updatedAt: "desc",
       },
       include: {
         event: true,
@@ -36,7 +40,7 @@ const getAllCertificates = async (req, res) => {
     });
     res.status(200).json(certificates);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch certificates' });
+    res.status(500).json({ error: "Failed to fetch certificates" });
   }
 };
 
@@ -49,10 +53,10 @@ const getCertificateById = async (req, res) => {
     if (certificate) {
       res.status(200).json(certificate);
     } else {
-      res.status(404).json({ error: 'Certificate not found' });
+      res.status(404).json({ error: "Certificate not found" });
     }
   } catch (error) {
-    res.status(500).json({ error: 'Failed to fetch certificate' });
+    res.status(500).json({ error: "Failed to fetch certificate" });
   }
 };
 
@@ -68,49 +72,86 @@ const updateCertificate = async (req, res) => {
         revoked,
       },
     });
+    // Invalidate cache for this certificate
+    if (updatedCertificate.hash) {
+      certificateCache.del(updatedCertificate.hash);
+    }
     res.status(200).json(updatedCertificate);
   } catch (error) {
-    res.status(400).json({ error: 'Failed to update certificate' });
+    res.status(400).json({ error: "Failed to update certificate" });
   }
 };
 
 const deleteCertificate = async (req, res) => {
   const { id } = req.params;
   try {
+    const certificateToDelete = await prisma.certificate.findUnique({
+      where: { id: parseInt(id) },
+      select: { hash: true }, // Select hash to invalidate cache
+    });
+
     await prisma.certificate.delete({
       where: { id: parseInt(id) },
     });
+
+    // Invalidate cache for this certificate
+    if (certificateToDelete && certificateToDelete.hash) {
+      certificateCache.del(certificateToDelete.hash);
+    }
     res.status(204).send();
   } catch (error) {
-    res.status(400).json({ error: 'Failed to delete certificate' });
+    res.status(400).json({ error: "Failed to delete certificate" });
   }
 };
 
 const verifyCertificate = async (req, res) => {
   const { hash } = req.params;
 
+  // Try to get from cache first
+  const cachedCertificate = certificateCache.get(hash);
+  if (cachedCertificate !== undefined) {
+    if (cachedCertificate === null) {
+      return res
+        .status(404)
+        .json({ valid: false, error: "Certificate not found" });
+    }
+
+    if (cachedCertificate.revoked) {
+      return res.status(400).json({ error: "Certificate has been revoked" });
+    }
+
+    return res
+      .status(200)
+      .json({ valid: true, certificate: cachedCertificate });
+  }
+
   try {
     const certificate = await prisma.certificate.findUnique({
       where: {
         hash,
       },
-      include: {
-        event: true,
-      },
+      include: { event: true },
     });
 
     if (certificate) {
+      // Store in cache
+      certificateCache.set(hash, certificate);
+
       if (certificate.revoked) {
-        res.status(400).json({ error: 'Certificate has been revoked' });
+        res.status(400).json({ error: "Certificate has been revoked" });
       } else {
         res.status(200).json({ valid: true, certificate });
       }
     } else {
-      res.status(404).json({ valid: false, error: 'Certificate not found' });
+      // Cache not found result for a shorter period to prevent repeated DB hits for non-existent hashes
+      certificateCache.set(hash, null, 60); // Cache null for 1 minute
+      res.status(404).json({ valid: false, error: "Certificate not found" });
     }
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: 'Failed to verify certificate', details: error.message });
+    res
+      .status(500)
+      .json({ error: "Failed to verify certificate", details: error.message });
   }
 };
 
@@ -118,13 +159,20 @@ const createBatchCertificates = async (req, res) => {
   const { names, eventId } = req.body;
 
   if (!names || !Array.isArray(names) || names.length === 0) {
-    return res.status(400).json({ error: 'Invalid request body. "names" must be a non-empty array.' });
+    return res.status(400).json({
+      error: 'Invalid request body. "names" must be a non-empty array.',
+    });
   }
 
   try {
-    const certificates = names.map(name => {
-      const certificate_code = `SINARI-2025-${Date.now()}-${Math.random().toString(36).substring(2, 8)}`;
-      const hash = crypto.createHash('sha256').update(certificate_code).digest('hex');
+    const certificates = names.map((name) => {
+      const certificate_code = `SINARI-2025-${Date.now()}-${Math.random()
+        .toString(36)
+        .substring(2, 8)}`;
+      const hash = crypto
+        .createHash("sha256")
+        .update(certificate_code)
+        .digest("hex");
       return {
         name,
         eventId,
@@ -135,13 +183,19 @@ const createBatchCertificates = async (req, res) => {
     });
 
     const createdCertificates = await prisma.$transaction(
-      certificates.map(certificate => prisma.certificate.create({ data: certificate }))
+      certificates.map((certificate) =>
+        prisma.certificate.create({ data: certificate })
+      )
     );
 
+    // No need to invalidate cache here as new certificates are created, not updated/deleted.
     res.status(201).json(createdCertificates);
   } catch (error) {
     console.error(error);
-    res.status(400).json({ error: 'Failed to create certificates in batch.', details: error.message });
+    res.status(400).json({
+      error: "Failed to create certificates in batch.",
+      details: error.message,
+    });
   }
 };
 
@@ -153,11 +207,13 @@ const revokeCertificate = async (req, res) => {
     });
 
     if (!certificate) {
-      return res.status(404).json({ error: 'Certificate not found' });
+      return res.status(404).json({ error: "Certificate not found" });
     }
 
     if (certificate.revoked) {
-      return res.status(400).json({ error: 'Certificate has already been revoked' });
+      return res
+        .status(400)
+        .json({ error: "Certificate has already been revoked" });
     }
 
     const revokedCertificate = await prisma.certificate.update({
@@ -166,9 +222,13 @@ const revokeCertificate = async (req, res) => {
         revoked: true,
       },
     });
+    // Invalidate cache for this certificate
+    if (revokedCertificate.hash) {
+      certificateCache.del(revokedCertificate.hash);
+    }
     res.status(200).json(revokedCertificate);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to revoke certificate' });
+    res.status(500).json({ error: "Failed to revoke certificate" });
   }
 };
 
@@ -181,24 +241,24 @@ const searchCertificates = async (req, res) => {
           {
             name: {
               contains: query,
-              mode: 'insensitive',
+              mode: "insensitive",
             },
           },
           {
             certificate_code: {
               contains: query,
-              mode: 'insensitive',
+              mode: "insensitive",
             },
           },
         ],
       },
       orderBy: {
-        updatedAt: 'desc',
+        updatedAt: "desc",
       },
     });
     res.status(200).json(certificates);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to search certificates' });
+    res.status(500).json({ error: "Failed to search certificates" });
   }
 };
 

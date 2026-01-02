@@ -1,5 +1,4 @@
-const { PrismaClient } = require('../../generated/prisma');
-const prisma = new PrismaClient();
+const prisma = require('../lib/prisma');
 
 const generateUniqueSlug = async (title) => {
   let slug = title

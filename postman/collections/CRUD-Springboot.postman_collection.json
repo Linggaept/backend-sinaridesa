@@ -1,0 +1,806 @@
+{
+  "info": {
+    "_postman_id": "df128305-2f2a-497c-947c-dc99d02eed22",
+    "name": "CRUD-Springboot",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Admin",
+          "id": "18fd5da6-dde3-4f19-8a22-310a878b07da",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"username\": \"admin\",\n    \"email\": \"admin@gmail.com\",\n    \"password\": \"password\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/admin/register",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "admin",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login Admin",
+          "id": "b965bd65-2b4f-4b64-83ea-4238316467c8",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"22.12.2010\",\n    \"password\": \"user123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/admin/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "admin",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Login Mhs",
+          "id": "59f57f54-38bd-4ad1-82c4-ccb6532d5c8a",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nim\": \"22.12.2010\",\n    \"password\": \"user123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/mahasiswa/login",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "mahasiswa",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get Status",
+          "id": "a711e17c-abd0-45b4-8268-537e65474cc7",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/auth/status",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "auth",
+                "status"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "af826085-67ab-4230-a364-cb77627c6f1e"
+    },
+    {
+      "name": "Mahasiswa",
+      "item": [
+        {
+          "name": "Get All",
+          "id": "3c01b7ad-2f9c-4a03-bae4-32fe9752b90b",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/mahasiswa",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "mahasiswa"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "id": "769fbe63-e2cd-468c-aed0-7293548adcbf",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nim\": \"123456789\",\n    \"nama\": \"Budi Budeng\",\n    \"email\": \"budi@example.com\",\n    \"semester\": 3,\n    \"ipk\": 3.5,\n    \"jurusan\": {\n        \"kode\": \"J001\"\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/mahasiswa/123456789",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "mahasiswa",
+                "123456789"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create",
+          "id": "8c3a8066-0c91-42cb-8a5b-707cf766a9af",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nim\": \"22.12.2011\",\n    \"nama\": \"Budi Gaming\",\n    \"email\": \"budi@example.com\",\n    \"semester\": 3,\n    \"ipk\": 3.5,\n    \"jurusan\": {\n        \"kode\": \"J001\"\n    },\n    \"password\" : \"user123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/mahasiswa",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "mahasiswa"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete",
+          "id": "d4bb4529-db14-490f-bd8f-70d941528e08",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/mahasiswa/123456789",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "mahasiswa",
+                "123456789"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "be89e22f-75f4-41ed-8375-defcd71841c6"
+    },
+    {
+      "name": "Jurusan",
+      "item": [
+        {
+          "name": "Get all",
+          "id": "5dcb936a-8bef-475d-a76c-e3c19fc70a41",
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjMsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc2NTQ2NjI0MSwiZXhwIjoxNzY1NDY5ODQxfQ.vwrkfeJlHSD03CpFg7DNp3xB76lV3MSbluwwUimjwe4",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/jurusan",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "jurusan"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create",
+          "id": "cb640fa7-7212-425f-a073-f273b9bdf36b",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"kode\": \"J001\",\n    \"nama\": \"Teknik Informatika\",\n    \"jenjangPendidikan\": \"S1\",\n    \"akreditasi\": \"A\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/jurusan",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "jurusan"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get By ID",
+          "id": "3f4e9c68-cf09-4f5c-a027-4d483af880db",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "id": "fdb4725b-9d78-44e2-968a-ed50bfdd7936",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"kode\": \"J001\",\n    \"nama\": \"Sistem Informasi\",\n    \"jenjangPendidikan\": \"S1\",\n    \"akreditasi\": \"A\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/jurusan/J001",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "jurusan",
+                "J001"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete",
+          "id": "559fddbb-15e6-4f60-93fa-3d910f94e404",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/jurusan/J002",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "jurusan",
+                "J002"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "897b60b1-410c-44b8-904a-0ddadb93be90"
+    },
+    {
+      "name": "Dosen",
+      "item": [
+        {
+          "name": "Get All",
+          "id": "65dcc371-2235-46e2-bc58-8dc07e0dce9b",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/dosen",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "dosen"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create",
+          "id": "357c0fc2-335a-4752-9bcb-95bdc1fb0781",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nip\": \"987654321\",\n    \"nama\": \"Dr. Siti\",\n    \"email\": \"siti@example.com\",\n    \"bidangKeahlian\": \"Data Science\",\n    \"pangkatGolongan\": \"IV/a\",\n    \"jurusan\": {\n        \"kode\": \"J001\"\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/dosen",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "dosen"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "id": "a9404815-3ff3-4a78-bf97-e2d5716eb9b3",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"nip\": \"987654321\",\n    \"nama\": \"Dr. SitiS\",\n    \"email\": \"siti@example.com\",\n    \"bidangKeahlian\": \"Data Science\",\n    \"pangkatGolongan\": \"IV/a\",\n    \"jurusan\": {\n        \"kode\": \"J001\"\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/dosen/987654321",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "dosen",
+                "987654321"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete",
+          "id": "877f9d0d-ee58-42c8-8523-7ea3493b8c60",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/dosen/987654321",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "dosen",
+                "987654321"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "49cd1a09-669b-442b-a328-51124ded5cd5"
+    },
+    {
+      "name": "Pendaftaran",
+      "item": [
+        {
+          "name": "Get All",
+          "id": "85838b02-d5ed-4205-a92a-e0408254d268",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/pendaftaran",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "pendaftaran"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create",
+          "id": "364b9bf6-1fd5-43ab-addf-ae3377fd6e54",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"mahasiswa\": {\n        \"nim\": \"123456789\"\n    },\n    \"mataKuliah\": {\n        \"kode\": \"MK001\"\n    },\n    \"nilai\": \"A\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/pendaftaran",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "pendaftaran"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "id": "7dac2ca7-e551-4fb1-b41c-4280e679501e",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"mahasiswa\": {\n        \"nim\": \"123456789\"\n    },\n    \"mataKuliah\": {\n        \"kode\": \"MK001\"\n    },\n    \"nilai\": \"B\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/pendaftaran/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "pendaftaran",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete",
+          "id": "6a1783b1-7aab-475a-be82-54f049df202f",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/pendaftaran/1",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "pendaftaran",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "e299a201-afdc-425f-bb37-6f7a28aac04d"
+    },
+    {
+      "name": "Mata Kuliah",
+      "item": [
+        {
+          "name": "Get all",
+          "id": "03c1c93f-95a8-4265-a738-549eda84d547",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/matakuliah",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "matakuliah"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create",
+          "id": "e4efbc1b-c554-43be-bffd-f3a0e62e293e",
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"kode\": \"MK001\",\n    \"nama\": \"Basis Data\",\n    \"sks\": 3,\n    \"kuota\": 40,\n    \"jurusan\": {\n        \"kode\": \"J001\"\n    },\n    \"dosen\": {\n        \"nip\": \"987654321\"\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/matakuliah",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "matakuliah"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update",
+          "id": "4a821a60-3161-4a0d-bb79-ae25f35cc544",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"kode\": \"MK001\",\n    \"nama\": \"PBO\",\n    \"sks\": 3,\n    \"kuota\": 40,\n    \"jurusan\": {\n        \"kode\": \"J001\"\n    },\n    \"dosen\": {\n        \"nip\": \"987654321\"\n    }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/matakuliah/MK001",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "matakuliah",
+                "MK001"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete",
+          "id": "7a97c433-16e7-48f5-bbb9-34c2944b6c16",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:8080/api/matakuliah/MK001",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "matakuliah",
+                "MK001"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get By Mhs",
+          "id": "18be4fec-8119-493f-8d19-1663831f2a20",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/matakuliah/mahasiswa/22.12.2515",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "matakuliah",
+                "mahasiswa",
+                "22.12.2515"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "e386ab8c-0433-4b70-9083-cfe0dc1a6e83"
+    },
+    {
+      "name": "Mahasiwa ID",
+      "item": [
+        {
+          "name": "Profile",
+          "id": "15dfc2a0-eb1c-47db-a106-9ef96b54f580",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/mahasiswa/profile",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "mahasiswa",
+                "profile"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Nilai",
+          "id": "a2a7d8f4-7214-4b6d-81e2-4c3f8da60d33",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:8080/api/nilai/mahasiswa/22.12.2515",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "8080",
+              "path": [
+                "api",
+                "nilai",
+                "mahasiswa",
+                "22.12.2515"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "1e73c009-010d-465c-a228-c319878769d0"
+    },
+    {
+      "name": "New Request",
+      "id": "aae3b8c0-2b4b-429a-9090-4e4a7d643a04",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+    }
+  ]
+}

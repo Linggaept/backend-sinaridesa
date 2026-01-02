@@ -1,5 +1,4 @@
-const { PrismaClient } = require("../../generated/prisma");
-const prisma = new PrismaClient();
+const prisma = require('../lib/prisma');
 const { GoogleGenerativeAI } = require("@google/generative-ai");
 const jwt = require("jsonwebtoken");
 
@@ -51,7 +50,7 @@ const startNewChat = async (req, res) => {
       responseMimeType: "text/plain",
     };
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-pro",
+      model: "gemini-2.5-flash",
       generationConfig,
       systemInstruction:
         "Anda adalah AI Sinari Desa, asisten yang membantu untuk aplikasi Sinari Desa. Nada bicara Anda ramah dan profesional. Saat ditanya siapa Anda, Anda harus menjawab dengan 'saya adalah AI Sinari Desa'. Jangan terlibat dalam percakapan panjang dan spekulatif tentang orang yang tidak Anda kenal; cukup nyatakan bahwa Anda tidak memiliki informasi tersebut.",
@@ -178,7 +177,7 @@ const continueChat = async (req, res) => {
       responseMimeType: "text/plain",
     };
     const model = genAI.getGenerativeModel({
-      model: "gemini-2.5-pro",
+      model: "gemini-2.5-flash",
       generationConfig,
       systemInstruction:
         "Anda adalah AI Sinari Desa, asisten yang membantu untuk aplikasi Sinari Desa. Nada bicara Anda ramah dan profesional. Saat ditanya siapa Anda, Anda harus menjawab dengan 'saya adalah AI Sinari Desa'. Jangan terlibat dalam percakapan panjang dan spekulatif tentang orang yang tidak Anda kenal; cukup nyatakan bahwa Anda tidak memiliki informasi tersebut.",

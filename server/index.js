@@ -4,7 +4,7 @@ const path = require("path");
 const cookieParser = require("cookie-parser");
 const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("../swagger");
-const { PrismaClient } = require("../generated/prisma");
+const prisma = require("./lib/prisma");
 require("dotenv").config();
 
 const limiter = require("./middlewares/rateLimiter");
@@ -12,7 +12,6 @@ const apiKeyMiddleware = require("./middlewares/apiKey");
 const routes = require("./routes");
 
 const app = express();
-const prisma = new PrismaClient();
 const PORT = process.env.PORT || 5001;
 
 // Middlewares
@@ -38,7 +37,7 @@ app.use(
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-app.use(limiter);
+// app.use(limiter);
 
 // Serve static files
 app.use("/uploads", express.static(path.join(__dirname, "../uploads")));

@@ -1,23 +1,25 @@
-FROM node:18-alpine
-
-# Install PostgreSQL client for pg_dump
-RUN apk add --no-cache postgresql-client
-
+# ---- Base Stage ----
+FROM node:18-alpine AS base
 WORKDIR /app
-
-# Copy package files
 COPY package*.json ./
 
-# Copy prisma schema. Ini penting untuk langkah generate.
+# ---- Dependencies Stage ----
+FROM base AS dependencies
+# Install all dependencies including devDependencies for build steps like prisma generate
+RUN npm install
+# Copy prisma schema to generate client
 COPY prisma ./prisma/
+RUN npx prisma generate
 
-# Install SEMUA dependencies (termasuk devDependencies agar 'prisma' CLI ada)
-# LALU jalankan prisma generate
-RUN npm install && npx prisma generate
-
-# Copy sisa source code Anda
+# ---- Production Stage ----
+FROM base AS production
+# Copy only production dependencies from the dependencies stage
+COPY --from=dependencies /app/node_modules ./node_modules
 COPY . .
+# Ensure the generated client is included if it's not in node_modules by default
+COPY --from=dependencies /app/node_modules/.prisma ./node_modules/.prisma
 
-EXPOSE 5000
+EXPOSE 5001
 
-CMD ["node", "server/index.js"]
+# The command from docker-compose will override this, but it's good practice to have it.
+CMD ["sh", "-c", "npx prisma migrate deploy && node server/index.js"]

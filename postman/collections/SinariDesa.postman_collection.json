@@ -1,0 +1,1074 @@
+{
+  "info": {
+    "_postman_id": "4ba608cf-903b-4eb8-8ac7-22d107d16000",
+    "name": "SinariDesa",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "User Register",
+          "id": "17e4080e-f24d-435b-aeb0-4b8b10c86fa2",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{x-api-key}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"name\": \"testuser10\",\n    \"email\": \"testuser10@example.com\",\n    \"password\": \"TestPass123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{sinaridesa_url}}/auth/register",
+              "host": [
+                "{{sinaridesa_url}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "User Login",
+          "id": "b8197818-cce3-4429-a9a6-59f1a927225e",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{x-api-key}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"email\": \"testuser1@example.com\",\n    \"password\": \"TestPass123!\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{sinaridesa_url}}/auth/login",
+              "host": [
+                "{{sinaridesa_url}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "56c687a9-d97e-403d-b53a-71e254485b37"
+    },
+    {
+      "name": "Course",
+      "item": [
+        {
+          "name": "Add Course",
+          "id": "6c9904a3-f7f8-43b0-ab0c-fe647ab60b97",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{x-api-key}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Test Title From Postman",
+                  "type": "text"
+                },
+                {
+                  "key": "uploader",
+                  "value": "Test Uploader From Postman",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Test Description From Postman",
+                  "type": "text"
+                },
+                {
+                  "key": "thumbnail",
+                  "type": "file",
+                  "src": [
+                    "/Users/linggaept/Downloads/instasave.website_485396350_17848129929430947_2043720301101601907_n.jpg"
+                  ]
+                },
+                {
+                  "key": "coursePdf",
+                  "type": "file",
+                  "src": [
+                    "/Users/linggaept/Downloads/Tugas Pertemuan 5 dan 6.pdf"
+                  ]
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{sinaridesa_url}}/courses",
+              "host": [
+                "{{sinaridesa_url}}"
+              ],
+              "path": [
+                "courses"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Course",
+          "id": "be68b8b4-cee6-4af1-af0a-71730965ad84",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{x-api-key}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Test Title From Postman2",
+                  "type": "text"
+                },
+                {
+                  "key": "uploader",
+                  "value": "Test Uploader From Postman2",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Test Description From Postman2",
+                  "type": "text"
+                },
+                {
+                  "key": "thumbnail",
+                  "type": "file",
+                  "src": [
+                    "/Users/linggaept/Downloads/instasave.website_485396350_17848129929430947_2043720301101601907_n.jpg"
+                  ]
+                },
+                {
+                  "key": "coursePdf",
+                  "type": "file",
+                  "src": [
+                    "/Users/linggaept/Downloads/Tugas Pertemuan 5 dan 6.pdf"
+                  ]
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{sinaridesa_url}}/courses/2",
+              "host": [
+                "{{sinaridesa_url}}"
+              ],
+              "path": [
+                "courses",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Courses",
+          "id": "4aa28ee1-6130-43a9-bcb8-aa438677119f",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "sinaridesagaul123",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{sinaridesa_url}}/courses",
+              "host": [
+                "{{sinaridesa_url}}"
+              ],
+              "path": [
+                "courses"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Course",
+          "id": "b3569a28-be79-414c-a175-f98ede0380c8",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "sinaridesagaul123",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{sinaridesa_url}}/courses/3",
+              "host": [
+                "{{sinaridesa_url}}"
+              ],
+              "path": [
+                "courses",
+                "3"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "0ef53eb4-85df-4944-979a-47aeea95e357"
+    },
+    {
+      "name": "Event",
+      "item": [
+        {
+          "name": "Add Event",
+          "id": "dad2ab5d-5b5f-4a7c-af0f-bac922139601",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{x-api-key}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Test Title From Postman",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Test Desc From Postman",
+                  "type": "text"
+                },
+                {
+                  "key": "date",
+                  "value": "2025-10-07T06:12:24.028Z",
+                  "type": "text"
+                },
+                {
+                  "key": "location",
+                  "value": "Test Loc From Postman",
+                  "type": "text"
+                },
+                {
+                  "key": "participants",
+                  "value": "300",
+                  "type": "text"
+                },
+                {
+                  "key": "thumbnail",
+                  "type": "file",
+                  "src": [
+                    "/Users/linggaept/Downloads/WhatsApp Image 2025-12-10 at 9.16.47 AM.jpeg"
+                  ]
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": [
+                    "/Users/linggaept/Downloads/WhatsApp Image 2025-12-10 at 9.16.47 AM.jpeg"
+                  ]
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{sinaridesa_url}}/events",
+              "host": [
+                "{{sinaridesa_url}}"
+              ],
+              "path": [
+                "events"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Event",
+          "id": "0cc38fae-db41-44f4-9885-89ee468c9683",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{x-api-key}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "title",
+                  "value": "Test Title From Postmans",
+                  "type": "text"
+                },
+                {
+                  "key": "description",
+                  "value": "Test Desc From Postmans",
+                  "type": "text"
+                },
+                {
+                  "key": "date",
+                  "value": "2025-10-07T06:12:24.028Z",
+                  "type": "text"
+                },
+                {
+                  "key": "location",
+                  "value": "Test Loc From Postman",
+                  "type": "text"
+                },
+                {
+                  "key": "participants",
+                  "value": "300",
+                  "type": "text"
+                },
+                {
+                  "key": "thumbnail",
+                  "type": "file",
+                  "src": [
+                    "/Users/linggaept/Downloads/WhatsApp Image 2025-12-10 at 9.16.47 AM.jpeg"
+                  ]
+                },
+                {
+                  "key": "image",
+                  "type": "file",
+                  "src": [
+                    "/Users/linggaept/Downloads/WhatsApp Image 2025-12-10 at 9.16.47 AM.jpeg"
+                  ]
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{sinaridesa_url}}/events/9",
+              "host": [
+                "{{sinaridesa_url}}"
+              ],
+              "path": [
+                "events",
+                "9"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Events",
+          "id": "9c6be07b-138b-44b1-ad53-0439c5d40a2c",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "sinaridesagaul123",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{sinaridesa_url}}/events",
+              "host": [
+                "{{sinaridesa_url}}"
+              ],
+              "path": [
+                "events"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Event",
+          "id": "2436bad7-350b-4f9c-a4d2-da414576e6c1",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "sinaridesagaul123",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{sinaridesa_url}}/events/9",
+              "host": [
+                "{{sinaridesa_url}}"
+              ],
+              "path": [
+                "events",
+                "9"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "e0532783-eb1c-452d-b485-3b5690e91880"
+    },
+    {
+      "name": "Team",
+      "item": [
+        {
+          "name": "Add Team",
+          "id": "62c30077-0751-4982-96af-b01a92b6d0d0",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{x-api-key}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Test Name From Postman",
+                  "type": "text"
+                },
+                {
+                  "key": "skills",
+                  "value": "Test Skills From Postman",
+                  "type": "text"
+                },
+                {
+                  "key": "position",
+                  "value": "MENTOR",
+                  "type": "text"
+                },
+                {
+                  "key": "picture",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{sinaridesa_url}}/team",
+              "host": [
+                "{{sinaridesa_url}}"
+              ],
+              "path": [
+                "team"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Teams",
+          "id": "478686b7-0f3c-4615-9020-259ce627be24",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "sinaridesagaul123",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{sinaridesa_url}}/team",
+              "host": [
+                "{{sinaridesa_url}}"
+              ],
+              "path": [
+                "team"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Team",
+          "id": "8b378afc-7eb2-414d-ba04-226fa87d4e2e",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{x-api-key}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "name",
+                  "value": "Test Name From Postman",
+                  "type": "text"
+                },
+                {
+                  "key": "skills",
+                  "value": "Test Skills From Postman",
+                  "type": "text"
+                },
+                {
+                  "key": "position",
+                  "value": "MENTOR",
+                  "type": "text"
+                },
+                {
+                  "key": "picture",
+                  "type": "file",
+                  "src": []
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{sinaridesa_url}}/team/14",
+              "host": [
+                "{{sinaridesa_url}}"
+              ],
+              "path": [
+                "team",
+                "14"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Team",
+          "id": "f4630ffe-693c-482d-96b3-0136bcd524b5",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "sinaridesagaul123",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{sinaridesa_url}}/team/13",
+              "host": [
+                "{{sinaridesa_url}}"
+              ],
+              "path": [
+                "team",
+                "13"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "1e74e516-ab3e-4730-b381-3ac9248e2833"
+    },
+    {
+      "name": "Certificate",
+      "item": [
+        {
+          "name": "Add Certificate(s)",
+          "id": "21e0e438-fb7f-4dc6-8e06-e2faa673da2d",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{x-api-key}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"names\": [\n        \"Nugroho Setia Budi\",\"Budi Ariadi\",\"Farrel Pratama\"\n    ],\n    \"eventId\": 2\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{sinaridesa_url}}/certificates/batch",
+              "host": [
+                "{{sinaridesa_url}}"
+              ],
+              "path": [
+                "certificates",
+                "batch"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Verify Certificate",
+          "id": "0975a66a-ec08-46e1-be62-e83e64edbc7a",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{x-api-key}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{sinaridesa_url}}/certificates/verify/61d71679db154609caba5f61fbbc241869e5288de02e8240e4650cb04084841e",
+              "host": [
+                "{{sinaridesa_url}}"
+              ],
+              "path": [
+                "certificates",
+                "verify",
+                "61d71679db154609caba5f61fbbc241869e5288de02e8240e4650cb04084841e"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Certificate",
+          "id": "54170710-5e42-4bac-a210-bd0f94549151",
+          "protocolProfileBehavior": {
+            "disableBodyPruning": true
+          },
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{x-api-key}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"names\": [\n        \"pikiren\",\"dewe\",\"iki\",\"test\"\n    ],\n    \"eventId\": 1\n}"
+            },
+            "url": {
+              "raw": "{{sinaridesa_url}}/certificates",
+              "host": [
+                "{{sinaridesa_url}}"
+              ],
+              "path": [
+                "certificates"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Revoke Sertificate",
+          "id": "22585544-fb74-4159-b919-a006deb32bd6",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "sinaridesagaul123",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{sinaridesa_url}}/certificates/46/revoke",
+              "host": [
+                "{{sinaridesa_url}}"
+              ],
+              "path": [
+                "certificates",
+                "46",
+                "revoke"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "a6aeb833-7343-4871-9114-10963455cda6"
+    },
+    {
+      "name": "Chatbot",
+      "item": [
+        {
+          "name": "Chat(with token)",
+          "id": "1e887bb5-ae08-4852-835f-1f6dcfb09877",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{x-api-key}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"message\": \"haiii, siapa kamuu??\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{sinaridesa_url}}/chat",
+              "host": [
+                "{{sinaridesa_url}}"
+              ],
+              "path": [
+                "chat"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Continue Chat With Slug",
+          "id": "d01690b8-c3a1-4cba-86b8-7f0068bd81eb",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{x-api-key}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"message\": \"haiii\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/chat",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5001",
+              "path": [
+                "api",
+                "chat"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Chat(with no token)",
+          "id": "4f7075f2-acb3-44b2-9771-5ce4719cfca3",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "{{x-api-key}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n    \"message\": \"haiii\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/chat",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "5001",
+              "path": [
+                "api",
+                "chat"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Chat History User",
+          "id": "a423648a-a953-47ea-99fe-f02fc3b15fd1",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": ""
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "01682614-416c-4643-b730-587c21fe21f4"
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Get All Users",
+          "id": "a73138e9-75f2-46dd-9c5c-f9d98a903a0a",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "sinaridesagaul123",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{sinaridesa_url}}/users",
+              "host": [
+                "{{sinaridesa_url}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create User",
+          "id": "296a30d0-422d-4fb6-baa2-5081227a42bf",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "sinaridesagaul123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n        \"name\": \"testuser2\",\n        \"email\": \"testuser2@example.com\",\n        \"password\": \"TestPass123!\",\n        \"role\": \"USER\"\n    }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{sinaridesa_url}}/users",
+              "host": [
+                "{{sinaridesa_url}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update User",
+          "id": "6d5b7db4-3aa1-49d4-9fa2-d7aa06bd5f7d",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "sinaridesagaul123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@gmail.com\",\n  \"name\": \"Admin\",\n  \"password\": \"AmikomOne123@\",\n  \"role\": \"ADMIN\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{sinaridesa_url}}/users/1",
+              "host": [
+                "{{sinaridesa_url}}"
+              ],
+              "path": [
+                "users",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "id": "689e3892-86d6-4d68-a78d-7475a6abc97b",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "sinaridesagaul123",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@gmail.com\",\n  \"name\": \"Admin\",\n  \"password\": \"AmikomOne123@\",\n  \"role\": \"ADMIN\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{sinaridesa_url}}/users/3",
+              "host": [
+                "{{sinaridesa_url}}"
+              ],
+              "path": [
+                "users",
+                "3"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "fb00cf87-f5d3-4e20-967e-2180f4b18b32"
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Get Stats Dashboard",
+          "id": "486abb88-5424-4631-84f9-76c9cd6d71d6",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-api-key",
+                "value": "sinaridesagaul123",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{sinaridesa_url}}/dashboard/stats",
+              "host": [
+                "{{sinaridesa_url}}"
+              ],
+              "path": [
+                "dashboard",
+                "stats"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "id": "93c29439-906f-41f4-a277-54063b950199"
+    },
+    {
+      "name": "Export DB",
+      "id": "c40403ae-458b-4ac4-bf55-89a0529b6173",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "x-api-key",
+            "value": "sinaridesagaul123",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "http://localhost:5001/export",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "5001",
+          "path": [
+            "export"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "Users ID",
+      "id": "f932e095-33e1-4144-a32b-1ec532646100",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": ""
+        }
+      },
+      "response": []
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjE4LCJpYXQiOjE3NjczNTY5NzcsImV4cCI6MTc2NzM2Nzc3N30.43CpIogOaxdxA8Timf6oapY6uVL65Du8Qc4DZdk8R80",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "id": "cd37cc32-cf2d-4c88-83e7-396ec34868d9",
+      "key": "token",
+      "value": ""
+    },
+    {
+      "id": "3ab4a175-3bb9-46e8-be29-34827af51376",
+      "key": "x-api-key",
+      "value": ""
+    },
+    {
+      "id": "d16cc161-24bb-4270-a9e0-25b0964c60ff",
+      "key": "sinaridesa_url",
+      "value": ""
+    }
+  ]
+}
