@@ -4,8 +4,8 @@ node_modules
 
 /generated/prisma
 
-uploads/course/pdf
-uploads/course/thumbnails
-uploads/team/
-uploads/event/images
-uploads/event/thumbnails
+uploads/course/pdf/*
+uploads/course/thumbnails/*
+uploads/team/*
+uploads/event/images/*
+uploads/event/thumbnails/*
